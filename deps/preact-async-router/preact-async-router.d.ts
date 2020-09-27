@@ -1,4 +1,4 @@
-import { JSX, Component, ComponentFactory } from "../preact/mod.d.ts";
+import { JSX, Component } from "../preact/preact.d.ts";
 
 interface IAsyncRouteProps {
   path: string;

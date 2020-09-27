@@ -3,33 +3,53 @@ import {
   Command,
   CompletionsCommand,
   fs,
-  oak,
   path,
-  dateFormat,
+  RollupCache,
+  debounce,
 } from "./deps/mod.ts";
 import { bundle } from "./src/bundle.ts";
+import { dependencyList } from "./src/dependency_graph.ts";
+import { serve } from "./src/serve.ts";
 import { findPages } from "./src/util.ts";
 
-await new Command()
-  .name("dext")
-  .version("0.1.0")
-  .description("The Preact Framework for Deno")
-  .action(function () {
-    console.log(this.getHelp());
-  })
-  .command("build [root]")
-  .description("Build your application.")
-  .action(build)
-  .command("start [root]")
-  .option(
-    "-a --address <address>",
-    "The address to listen on.",
-    { default: ":3000" },
-  )
-  .description("Start a built application.")
-  .action(start)
-  .command("completions", new CompletionsCommand())
-  .parse(Deno.args);
+try {
+  await new Command()
+    .throwErrors()
+    .name("dext")
+    .version("0.1.0")
+    .description("The Preact Framework for Deno")
+    .action(function () {
+      console.log(this.getHelp());
+    })
+    .command("build [root]")
+    .description("Build your application.")
+    .action(build)
+    .command("start [root]")
+    .option(
+      "-a --address <address>",
+      "The address to listen on.",
+      { default: ":3000" },
+    )
+    .option(
+      "--quiet",
+      "If access logs should be printed.",
+      { default: false },
+    )
+    .description("Start a built application.")
+    .action(start)
+    .command("dev [root]")
+    .option(
+      "-a --address <address>",
+      "The address to listen on.",
+      { default: ":3000" },
+    )
+    .description("Start your application in development mode.")
+    .action(dev)
+    .command("completions", new CompletionsCommand())
+    .parse(Deno.args);
+} catch (err) {
+  console.log(colors.red(colors.bold("error: ")) + err.message);
+}
 
 async function build(_options: unknown, root?: string) {
   root = path.resolve(Deno.cwd(), root ?? "");
@@ -40,6 +60,7 @@ async function build(_options: unknown, root?: string) {
       colors.bold("Error: ") +
         "Missing tsconfig.json file.",
     ));
+    Deno.exit(1);
   }
 
   // Collect list of all pages
@@ -59,10 +80,15 @@ async function build(_options: unknown, root?: string) {
   );
 
   // Do bundling
-  await bundle(pages, { rootDir: root, outDir: dextDir, tsconfigPath });
+  const outDir = path.join(dextDir, "static");
+  await bundle(pages, { rootDir: root, outDir, tsconfigPath, isDev: false });
+  console.log(colors.green(colors.bold("Build success.")));
 }
 
-async function start(options: { address: string }, root?: string) {
+async function start(
+  options: { address: string; quiet: boolean },
+  root?: string,
+) {
   root = path.resolve(Deno.cwd(), root ?? "");
 
   const dextDir = path.join(root, ".dext");
@@ -72,48 +98,84 @@ async function start(options: { address: string }, root?: string) {
       colors.bold("Error: ") +
         "Page map does not exist. Did you build the project?",
     ));
+    Deno.exit(1);
   }
   const pagemap = JSON.parse(await Deno.readTextFile(pagemapPath));
 
   const staticDir = path.join(dextDir, "static");
 
-  const router = new oak.Router();
+  await serve(
+    pagemap,
+    { staticDir, address: options.address, quiet: options.quiet },
+  );
+}
 
-  for (const page of pagemap) {
-    router.get(
-      page.route,
-      async (context) => {
-        await oak.send(context, page.name + ".html", { root: staticDir });
-      },
-    );
+async function dev(options: { address: string }, maybeRoot?: string) {
+  const root = path.resolve(Deno.cwd(), maybeRoot ?? "");
+
+  const tsconfigPath = path.join(root, "tsconfig.json");
+  if (!await fs.exists(tsconfigPath)) {
+    console.log(colors.red(
+      colors.bold("Error: ") +
+        "Missing tsconfig.json file.",
+    ));
+    Deno.exit(1);
   }
 
-  const app = new oak.Application();
+  let cache: RollupCache = { modules: [] };
 
-  app.use(async (ctx, next) => {
-    const now = new Date();
-    await next();
-    console.log(
-      `[${
-        dateFormat(now, "yyyy-MM-dd HH:mm:ss")
-      }] ${ctx.request.method} ${ctx.request.url}`,
-    );
-  });
+  // Collect list of all pages
+  const pagesDir = path.join(root, "pages");
+  const pages = await findPages(pagesDir);
 
-  app.use(router.routes());
-  app.use(router.allowedMethods());
+  const dextDir = path.join(root, ".dext");
+  await fs.ensureDir(dextDir);
+  const outDir = path.join(dextDir, "static");
 
-  app.use(async (context) => {
-    await oak.send(context, context.request.url.pathname, {
-      root: staticDir,
-    });
-  });
+  const run = debounce(async function () {
+    const start = new Date();
+    console.log(colors.cyan(colors.bold("Started build...")));
 
-  app.addEventListener("listen", ({ hostname, port }) => {
-    console.log(colors.green(
-      `Listening on http://${hostname || "127.0.0.1"}:${port}`,
-    ));
-  });
+    try {
+      cache = (await bundle(
+        pages,
+        { rootDir: root, outDir, tsconfigPath, cache, isDev: true },
+      ))!;
+      console.log(
+        colors.green(
+          colors.bold(
+            `Build success done ${
+              (new Date().getTime() - start.getTime()).toFixed(0)
+            }ms`,
+          ),
+        ),
+      );
+    } catch (err) {
+      if (err.message != "Failed to prerender page") {
+        console.log(colors.red(colors.bold("error: ")) + err.message);
+      }
+    }
+  }, 100);
 
-  await app.listen(options.address);
+  const deps = (await dependencyList(pages.map((page) => page.path)));
+  const toWatch = deps
+    .filter((dep) => dep.startsWith(`file://`))
+    .map(path.fromFileUrl)
+    .filter((dep) => dep.startsWith(root));
+
+  const server = serve(
+    pages,
+    { staticDir: outDir, address: options.address, quiet: true },
+  );
+
+  await run();
+
+  const watcher = (async () => {
+    for await (const { kind } of Deno.watchFs(toWatch)) {
+      if (kind === "any" || kind === "access") continue;
+      await run();
+    }
+  })();
+
+  await Promise.all([server, watcher]);
 }

@@ -7,7 +7,7 @@ import {
   Component,
   PreactDOMAttributes,
   ClassAttributes,
-} from "./mod.d.ts";
+} from "./preact.d.ts";
 
 type Defaultize<Props, Defaults> =
   // Distribute over unions

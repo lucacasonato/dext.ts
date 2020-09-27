@@ -1,5 +1,5 @@
 // deno-lint-ignore triple-slash-reference
-/// <reference types="./mod.d.ts" />
+/// <reference types="./preact-async-router.d.ts" />
 
 import { h, Component } from "../preact/mod.ts";
 

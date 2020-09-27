@@ -13,16 +13,23 @@ import {
   brotliEncode,
   pooledMap,
   fs,
+  RollupCache,
 } from "../deps/mod.ts";
 import { dextjsPlugin } from "./plugins/dextjs.ts";
 import type { Page } from "./util.ts";
 
 export async function bundle(
   pages: Page[],
-  options: { rootDir: string; outDir: string; tsconfigPath: string },
-) {
+  options: {
+    rootDir: string;
+    outDir: string;
+    tsconfigPath: string;
+    cache?: RollupCache;
+    isDev: boolean;
+  },
+): Promise<RollupCache | undefined> {
   const outputOptions: OutputOptions = {
-    dir: path.join(options.outDir, "static"),
+    dir: options.outDir,
     format: "es",
     sourcemap: true,
     compact: true,
@@ -41,51 +48,56 @@ export async function bundle(
     plugins: [
       dextjsPlugin(pageMap, { tsconfigPath: options.tsconfigPath }),
       ...useCache(tsconfig),
-      pluginTerserTransform({
+      ...(options.isDev ? [] : [pluginTerserTransform({
         module: true,
         compress: true,
         mangle: true,
-      }),
+      })]),
     ],
     output: outputOptions,
     preserveEntrySignatures: false,
+    cache: options.cache,
   };
 
   const outDir = outputOptions.dir!;
-
-  const build = await rollup(rollupOptions) as RollupBuild;
-  const generated = await persistSourceMaps(build.generate, outputOptions);
 
   try {
     await Deno.remove(outDir, { recursive: true });
   } catch (err) {
     if (!(err instanceof Deno.errors.NotFound)) throw err;
   }
+
+  const build = await rollup(rollupOptions) as RollupBuild;
+  const generated = await persistSourceMaps(build.generate, outputOptions);
+
   await Deno.mkdir(outDir, { recursive: true });
   await emitFiles(generated, outDir);
 
-  const outGlob = path.join(outDir, "/**/*");
-  const res = pooledMap(
-    50,
-    fs.expandGlob(
-      outGlob,
-      {
-        exclude: [outGlob + ".br", outGlob + ".gz"],
-        globstar: true,
-        includeDirs: false,
+  // In production emit .br and .gz files
+  if (!options.isDev) {
+    const outGlob = path.join(outDir, "/**/*");
+    const res = pooledMap(
+      50,
+      fs.expandGlob(
+        outGlob,
+        {
+          exclude: [outGlob + ".br", outGlob + ".gz"],
+          globstar: true,
+          includeDirs: false,
+        },
+      ),
+      async (entry) => {
+        const path = entry.path;
+        const file = await Deno.readFile(path);
+        await Deno.writeFile(path + ".gz", gzipEncode(file));
+        await Deno.writeFile(path + ".br", brotliEncode(file, undefined, 11));
       },
-    ),
-    async (entry) => {
-      const path = entry.path;
-      const file = await Deno.readFile(path);
-      await Deno.writeFile(path + ".gz", gzipEncode(file));
-      await Deno.writeFile(path + ".br", brotliEncode(file, undefined, 11));
-    },
-  );
+    );
 
-  for await (const _ of res) {
-    // wait for all files to be processed
+    for await (const _ of res) {
+      // wait for all files to be processed
+    }
   }
 
-  console.log(colors.green(colors.bold("Build success.")));
+  return build.cache;
 }
