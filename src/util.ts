@@ -6,8 +6,7 @@ export interface Page {
   route: string;
 }
 
-export async function findPages(root: string): Promise<Page[]> {
-  const pagesDir = path.join(root, "pages");
+export async function findPages(pagesDir: string): Promise<Page[]> {
   const dir = fs.walk(
     pagesDir,
     { includeDirs: false, includeFiles: true, exts: ["tsx", "jsx"] },

@@ -1,11 +1,10 @@
-import { resolve, Plugin } from "../../deps/mod.ts";
+import { path, Plugin } from "../../deps/mod.ts";
+import type { Page } from "../util.ts";
 
-export interface Page {
-  name: string;
-  route: string;
-}
-
-export function dextjsPlugin(pages: Record<string, Page>): Plugin {
+export function dextjsPlugin(
+  pages: Record<string, Page>,
+  options: { tsconfigPath: string },
+): Plugin {
   const preactURL = new URL("../../deps/preact/mod.ts", import.meta.url)
     .toString();
   const preactRouterURL = new URL(
@@ -88,6 +87,7 @@ hydrate(<App />, document.getElementById("__dext")!);`;
           const source = await generatePrerenderedHTML(
             component,
             imports,
+            options,
           );
 
           this.emitFile({
@@ -105,8 +105,9 @@ hydrate(<App />, document.getElementById("__dext")!);`;
 async function generatePrerenderedHTML(
   component: string,
   imports: string[],
+  options: { tsconfigPath: string },
 ) {
-  const resolvedComponent = resolve(Deno.cwd(), component);
+  const resolvedComponent = path.resolve(Deno.cwd(), component);
 
   const prerenderHostURL = new URL("./prerenderHost.jsx", import.meta.url);
   const proc = Deno.run({
@@ -116,7 +117,7 @@ async function generatePrerenderedHTML(
       "--allow-read",
       "--allow-net",
       "-c",
-      "./tsconfig.json",
+      options.tsconfigPath,
       prerenderHostURL.toString(),
       resolvedComponent,
     ],
