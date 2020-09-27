@@ -16,12 +16,13 @@ The Preact Framework for Deno. Dext.ts is heavily inspired by Next.js.
 To install, run the following command. This will make the `dext` CLI available in your path.
 
 ```
-deno install --allow-read --allow-write --allow-env --allow-net --allow-run --unstable https://deno.land/x/dext/mod.ts
+deno install --allow-read --allow-write --allow-env --allow-net --allow-run --unstable https://deno.land/x/dext@0.2.0/mod.ts
 ```
 
 ## Example
 
-For an example, see the `/example` folder. You can build it by running `dext build`, and then serve it by running `dext start`.
+For an example, see the `/example` folder. You can create a production build it by running
+`dext build`, and then serve it by running `dext start`. You can also run `dext dev` to
+start watching, building, and serving.
 
-You can also see a deployed version of this on at https://dext.fly.dev.
-
+You can also see a deployed version of this example on at https://dext.fly.dev.
