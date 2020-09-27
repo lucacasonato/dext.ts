@@ -119,7 +119,7 @@ async function generatePrerenderedHTML(
       "-c",
       options.tsconfigPath,
       prerenderHostURL.toString(),
-      resolvedComponent,
+      "file://" + resolvedComponent,
     ],
     stdout: "piped",
     stderr: "inherit",
