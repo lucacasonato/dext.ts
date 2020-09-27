@@ -116,6 +116,7 @@ async function generatePrerenderedHTML(
       "run",
       "--allow-read",
       "--allow-net",
+      "--no-check",
       "-c",
       options.tsconfigPath,
       prerenderHostURL.toString(),

@@ -19,7 +19,6 @@ export { pluginTerserTransform } from "https://raw.githubusercontent.com/lucacas
 export { persistSourceMaps } from "https://raw.githubusercontent.com/lucacasonato/denopack/lucafixed/cli/persistSourceMaps.ts";
 export { emitFiles } from "https://raw.githubusercontent.com/lucacasonato/denopack/lucafixed/cli/emitFiles.ts";
 
-
 // std
 export * as colors from "https://deno.land/std@0.71.0/fmt/colors.ts";
 export * as path from "https://deno.land/std@0.71.0/path/mod.ts";
@@ -37,3 +36,16 @@ export { format as dateFormat } from "https://deno.land/std@0.71.0/datetime/mod.
 
 export { gzipEncode } from "https://deno.land/x/wasm_gzip@v1.0.0/mod.ts";
 export { compress as brotliEncode } from "https://deno.land/x/brotli@v0.1.4/mod.ts";
+
+import { default as _debounce } from "https://unpkg.com/lodash-es@4.17.15/debounce.js";
+export const debounce = _debounce as <
+  T extends (...args: unknown[]) => unknown,
+>(
+  func: T,
+  wait?: number,
+  options?: {
+    leading?: boolean;
+    maxWait?: number;
+    trailing?: boolean;
+  },
+) => T;
