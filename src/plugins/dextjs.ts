@@ -8,12 +8,12 @@ export interface Page {
 export function dextjsPlugin(pages: Record<string, Page>): Plugin {
   const preactURL = new URL("../../deps/preact/mod.ts", import.meta.url)
     .toString();
-  const preactRouterURL = new URL(
-    "../../deps/preact-router/mod.ts",
+  const preactCompatURL = new URL(
+    "../../deps/preact/compat.ts",
     import.meta.url,
   ).toString();
-  const preactAsyncRouterURL = new URL(
-    "../../deps/preact-async-router/mod.js",
+  const preactRouterURL = new URL(
+    "../../deps/preact-router/mod.ts",
     import.meta.url,
   ).toString();
 
@@ -41,21 +41,32 @@ export function dextjsPlugin(pages: Record<string, Page>): Plugin {
     },
     load(id) {
       if (id == "dextjs:///main.js") {
-        const bundle = `import { h, hydrate } from "${preactURL}";
+        const bundle = `import { h } from "${preactURL}";
 import { Router, Route } from "${preactRouterURL}";
-import AsyncRoute from "${preactAsyncRouterURL}";
+import { Suspense, lazy, hydrate } from "${preactCompatURL}";
+
+const pages = {
+  ${
+          Object.entries(pages).map(([id, page]) =>
+            `"${page.name}": wrap(lazy(() => import("${id}").then((module) => module.default)))`
+          ).join(
+            ",\n  ",
+          )
+        }};
 
 function App() {
   return (
     <div>
-      <Router>
-        ${
+      <Suspense fallback={null}>
+        <Router>
+          ${
           Object.entries(pages).map(([id, page]) =>
-            `<AsyncRoute path="${page.route}" getComponent={() => import("${id}").then((module) => wrap(module.default))} />`
+            `<Route path="${page.route}" component={pages["${page.name}"]} />`
           ).join("\n        ")
         }
-        <Route default component={Error404} />
-      </Router>
+          <Route default component={Error404} />
+        </Router>
+      </Suspense>
     </div>
   );
 }

@@ -6,7 +6,7 @@ function IndexPage() {
       <h1>Hello World!</h1>
       <p>This is the index page.</p>
       <p>
-        <a href="/user/lucacasonato">Go to @lucacasonato</a>
+        <a href="/user/[name]">Go to @lucacasonato</a>
       </p>
     </>
   );
