@@ -6,8 +6,6 @@ interface Data {
 }
 
 function IndexPage(props: PageProps<Data>) {
-  const hello = "";
-
   return (
     <>
       <h1>Hello World!!!</h1>
@@ -20,12 +18,12 @@ function IndexPage(props: PageProps<Data>) {
   );
 }
 
-export function getStaticData(): GetStaticData<Data> {
+export const getStaticData = (): GetStaticData<Data> => {
   return {
     data: {
       random: Math.random().toString(),
     },
   };
-}
+};
 
 export default IndexPage;

@@ -15,7 +15,7 @@ import {
   fs,
   RollupCache,
 } from "../deps/mod.ts";
-import { dextjsPlugin } from "./plugins/dextjs.ts";
+import { dextPlugin } from "./plugins/dext.ts";
 import type { Page } from "./util.ts";
 
 export async function bundle(
@@ -46,7 +46,7 @@ export async function bundle(
   const rollupOptions: RollupOptions = {
     input: [],
     plugins: [
-      dextjsPlugin(pageMap, { tsconfigPath: options.tsconfigPath }),
+      dextPlugin(pageMap, { tsconfigPath: options.tsconfigPath }),
       ...useCache(tsconfig),
       ...(options.isDev ? [] : [pluginTerserTransform({
         module: true,

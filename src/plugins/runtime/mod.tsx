@@ -4,10 +4,28 @@ import { Router, Route } from "../../../deps/preact-router/mod.ts";
 import AsyncRoute from "../../../deps/preact-async-router/mod.js";
 import type { PageProps } from "../../type.ts";
 
-export function wrap(Component: ComponentType<PageProps>) {
-  return (route: Record<string, string>) => (
-    <Component route={route} data={{}} isFallback={false} />
-  );
+export async function loadComponent(
+  componentPromise: Promise<{ default: ComponentType<PageProps> }>,
+  dataFile: string | undefined
+) {
+  const [Component, data]: [
+    ComponentType<PageProps>,
+    unknown
+  ] = await Promise.all([
+    componentPromise.then((m) => m.default),
+    (async () => {
+      if (dataFile) {
+        const req = await fetch(dataFile, {
+          headers: { accepts: "application/json" },
+        });
+        return await req.json();
+      }
+      return undefined;
+    })(),
+  ]);
+  return (route: Record<string, string>) => {
+    return <Component route={route} data={data} isFallback={false} />;
+  };
 }
 
 export function Error404() {
