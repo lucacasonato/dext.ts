@@ -4,6 +4,7 @@ export interface Page {
   path: string;
   name: string;
   route: string;
+  hasGetStaticData: boolean;
 }
 
 export async function findPages(pagesDir: string): Promise<Page[]> {
@@ -17,7 +18,7 @@ export async function findPages(pagesDir: string): Promise<Page[]> {
       pages.push(path.relative(pagesDir, file.path));
     }
   }
-  return pages.map((page) => {
+  return await Promise.all(pages.map(async (page) => {
     const name = page.substring(0, page.length - path.extname(page).length);
     const parts = name.split("/");
     if (parts[parts.length - 1] === "index") {
@@ -33,10 +34,34 @@ export async function findPages(pagesDir: string): Promise<Page[]> {
       return part;
     }).join("/");
 
+    const p = path.join(pagesDir, page);
+
+    const hasGetStaticData = await checkHasGetStaticData(p);
+
     return ({
-      path: path.join(pagesDir, page),
+      path: p,
       name,
       route,
+      hasGetStaticData,
     });
+  }));
+}
+
+export async function checkHasGetStaticData(path: string): Promise<boolean> {
+  const proc = Deno.run({
+    cmd: ["deno", "doc", "--json", path],
+    stdout: "piped",
+    stderr: "inherit",
   });
+  const out = await proc.output();
+  const { success } = await proc.status();
+  if (!success) {
+    throw new Error("Failed to analyze " + path);
+  }
+  const body = new TextDecoder().decode(out);
+  const data: Array<{ kind: string; name: string }> = JSON.parse(body);
+  return data.findIndex((d) =>
+    (d.kind === "variable" || d.kind === "function") &&
+    d.name === "getStaticData"
+  ) !== -1;
 }

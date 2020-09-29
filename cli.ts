@@ -33,7 +33,6 @@ try {
     .option(
       "--quiet",
       "If access logs should be printed.",
-      { default: false },
     )
     .description("Start a built application.")
     .action(start)

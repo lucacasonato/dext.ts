@@ -2,7 +2,7 @@ import { h, Fragment } from "../../deps.ts";
 import type { PageProps } from "../../deps.ts";
 
 function UserPage(props: PageProps) {
-  const name = props.params?.name ?? "";
+  const name = props.route?.name ?? "";
 
   return (
     <>

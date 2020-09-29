@@ -1,20 +1,12 @@
 import { path, Plugin } from "../../deps/mod.ts";
 import type { Page } from "../util.ts";
 
-export function dextjsPlugin(
+export function dextPlugin(
   pages: Record<string, Page>,
   options: { tsconfigPath: string },
 ): Plugin {
-  const preactURL = new URL("../../deps/preact/mod.ts", import.meta.url)
+  const runtimeURL = new URL("./runtime/mod.tsx", import.meta.url)
     .toString();
-  const preactRouterURL = new URL(
-    "../../deps/preact-router/mod.ts",
-    import.meta.url,
-  ).toString();
-  const preactAsyncRouterURL = new URL(
-    "../../deps/preact-async-router/mod.js",
-    import.meta.url,
-  ).toString();
 
   return {
     name: "dext.ts",
@@ -29,42 +21,35 @@ export function dextjsPlugin(
         });
       }
       this.emitFile({
-        id: "dextjs:///main.js",
+        id: "dext:///main.js",
         type: "chunk",
         implicitlyLoadedAfterOneOf,
       });
     },
     resolveId(source, referrer) {
-      if (referrer === "dextjs:///main.js") return source;
+      if (referrer === "dext:///main.js") return source;
       return null;
     },
     load(id) {
-      if (id == "dextjs:///main.js") {
-        const bundle = `import { h, hydrate } from "${preactURL}";
-import { Router, Route } from "${preactRouterURL}";
-import AsyncRoute from "${preactAsyncRouterURL}";
+      if (id == "dext:///main.js") {
+        const bundle =
+          `import { h, hydrate, Router, Route, AsyncRoute, Error404, loadComponent } from "${runtimeURL}";
 
 function App() {
   return (
     <div>
       <Router>
         ${
-          Object.entries(pages).map(([id, page]) =>
-            `<AsyncRoute path="${page.route}" getComponent={() => import("${id}").then((module) => wrap(module.default))} />`
-          ).join("\n        ")
-        }
+            Object.entries(pages).map(([id, page]) =>
+              `<AsyncRoute path="${page.route}" getComponent={() => loadComponent(import("${id}"), ${
+                page.hasGetStaticData ? `"${page.name}.json"` : `undefined`
+              })} />`
+            ).join("\n        ")
+          }
         <Route default component={Error404} />
       </Router>
     </div>
   );
-}
-
-function wrap(Component) {
-  return (params) => <Component params={params} />;
-}
-
-function Error404() {
-  return <div>404 not found</div>;
 }
 
 hydrate(<App />, document.getElementById("__dext")!);`;
@@ -84,9 +69,22 @@ hydrate(<App />, document.getElementById("__dext")!);`;
             ...file.implicitlyLoadedBefore,
           ];
 
+          const staticData = await getStaticData(component, options);
+          const data = staticData?.data;
+
+          if (staticData !== undefined) {
+            this.emitFile({
+              type: "asset",
+              source: JSON.stringify(data),
+              name: "dext JSON data",
+              fileName: `${page.name}.json`,
+            });
+          }
+
           const source = await generatePrerenderedHTML(
             component,
             imports,
+            data,
             options,
           );
 
@@ -102,24 +100,25 @@ hydrate(<App />, document.getElementById("__dext")!);`;
   };
 }
 
-async function generatePrerenderedHTML(
+async function getStaticData(
   component: string,
-  imports: string[],
   options: { tsconfigPath: string },
 ) {
   const resolvedComponent = path.resolve(Deno.cwd(), component);
 
-  const prerenderHostURL = new URL("./prerenderHost.jsx", import.meta.url);
+  const staticDataHostURL = new URL(
+    "./runtime/static_data_host.ts",
+    import.meta.url,
+  );
   const proc = Deno.run({
     cmd: [
       "deno",
       "run",
-      "--allow-read",
-      "--allow-net",
+      "-A",
       "--no-check",
       "-c",
       options.tsconfigPath,
-      prerenderHostURL.toString(),
+      staticDataHostURL.toString(),
       "file://" + resolvedComponent,
     ],
     stdout: "piped",
@@ -127,7 +126,53 @@ async function generatePrerenderedHTML(
   });
   const out = await proc.output();
   const { success } = await proc.status();
-  if (!success) throw new Error("Failed to prerender page");
+  if (!success) {
+    console.log(out);
+    throw new Error("Failed to prerender page");
+  }
+  if (out.length === 0) return undefined;
+  const body = new TextDecoder().decode(out);
+  return JSON.parse(body);
+}
+
+async function generatePrerenderedHTML(
+  component: string,
+  imports: string[],
+  data: unknown,
+  options: { tsconfigPath: string },
+) {
+  const resolvedComponent = path.resolve(Deno.cwd(), component);
+
+  const prerenderHostURL = new URL(
+    "./runtime/prerender_host.tsx",
+    import.meta.url,
+  );
+  const proc = Deno.run({
+    cmd: [
+      "deno",
+      "run",
+      "-A",
+      "--no-check",
+      "-c",
+      options.tsconfigPath,
+      prerenderHostURL.toString(),
+      "file://" + resolvedComponent,
+    ],
+    stdin: "piped",
+    stdout: "piped",
+    stderr: "inherit",
+  });
+  await Deno.writeAll(
+    proc.stdin,
+    new TextEncoder().encode(JSON.stringify(data)),
+  );
+  proc.stdin.close();
+  const out = await proc.output();
+  const { success } = await proc.status();
+  if (!success) {
+    console.log(out);
+    throw new Error("Failed to prerender page");
+  }
   const body = new TextDecoder().decode(out);
 
   const preloads = imports
