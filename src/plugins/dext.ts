@@ -77,7 +77,9 @@ hydrate(<App />, document.getElementById("__dext")!);`;
           const createPath = compile(page.route);
 
           for (const route of routes) {
-            const path = createPath(route).slice(1) || "index";
+            const path = route !== undefined
+              ? createPath(route).slice(1)
+              : page.name;
 
             const staticData = await getStaticData(
               component,
