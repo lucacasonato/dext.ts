@@ -1,6 +1,6 @@
 import { compile, path, Plugin } from "../../deps/mod.ts";
 import type { Page } from "../util.ts";
-import type { GetStaticDataContext } from "../type.ts";
+import type { GetStaticDataContext, GetStaticPaths } from "../type.ts";
 
 export function dextPlugin(
   pages: Record<string, Page>,
@@ -70,20 +70,20 @@ hydrate(<App />, document.getElementById("__dext")!);`;
             ...file.implicitlyLoadedBefore,
           ];
 
-          const routes = page.hasGetStaticPaths
-            ? (await getStaticPaths(component, options)).pages
-            : [undefined];
+          const paths = page.hasGetStaticPaths
+            ? (await getStaticPaths(component, options))!
+            : { pages: [{ route: undefined }] };
 
           const createPath = compile(page.route);
 
-          for (const route of routes) {
-            const path = route !== undefined
-              ? createPath(route).slice(1)
+          for (const page_ of paths.pages) {
+            const path = page_.route !== undefined
+              ? createPath(page_.route).slice(1)
               : page.name;
 
             const staticData = await getStaticData(
               component,
-              { route },
+              { route: page_.route },
               options,
             );
             const data = staticData?.data;
@@ -100,7 +100,7 @@ hydrate(<App />, document.getElementById("__dext")!);`;
             const source = await generatePrerenderedHTML(
               component,
               imports,
-              { data, route },
+              { data, route: page_.route },
               options,
             );
 
@@ -120,7 +120,7 @@ hydrate(<App />, document.getElementById("__dext")!);`;
 async function getStaticPaths(
   component: string,
   options: { tsconfigPath: string },
-) {
+): Promise<GetStaticPaths | undefined> {
   const resolvedComponent = path.resolve(Deno.cwd(), component);
 
   const staticDataHostURL = new URL(
@@ -195,7 +195,7 @@ async function getStaticData(
 async function generatePrerenderedHTML(
   component: string,
   imports: string[],
-  data: unknown,
+  context: { data: unknown; route?: Record<string, string | string[]> },
   options: { tsconfigPath: string },
 ) {
   const resolvedComponent = path.resolve(Deno.cwd(), component);
@@ -220,7 +220,7 @@ async function generatePrerenderedHTML(
   });
   await Deno.writeAll(
     proc.stdin,
-    new TextEncoder().encode(JSON.stringify(data)),
+    new TextEncoder().encode(JSON.stringify(context)),
   );
   proc.stdin.close();
   const out = await proc.output();

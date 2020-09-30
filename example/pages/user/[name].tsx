@@ -29,13 +29,19 @@ export const getStaticPaths = (): GetStaticPaths => {
   return {
     pages: [
       {
-        name: "luca",
+        route: {
+          name: "luca",
+        },
       },
       {
-        name: "bartek",
+        route: {
+          name: "bartek",
+        },
       },
       {
-        name: "ry",
+        route: {
+          name: "ry",
+        },
       },
     ],
   };

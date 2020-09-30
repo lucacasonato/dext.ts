@@ -12,5 +12,9 @@ export interface GetStaticData<T = unknown> {
 }
 
 export interface GetStaticPaths {
-  pages: Record<string, string | string[]>[];
+  pages: GetStaticPathsPage[];
+}
+
+export interface GetStaticPathsPage {
+  route: Record<string, string | string[]>;
 }
