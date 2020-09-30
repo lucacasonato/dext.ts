@@ -16,7 +16,7 @@ const { data, route } = rawData.length == 0
 console.log(
   render(
     <div>
-      <Component route={route} isFallback={true} data={data} />
+      <Component route={route} data={data} />
     </div>,
   ),
 );

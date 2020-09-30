@@ -28,7 +28,7 @@ export async function loadComponent(
   ]);
   return (route: Record<string, string>) => {
     if (hasStaticData && data === undefined) return <Error404 />;
-    return <Component route={route} data={data} isFallback={false} />;
+    return <Component route={route} data={data} />;
   };
 }
 
