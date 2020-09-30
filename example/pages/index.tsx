@@ -1,5 +1,5 @@
-import { h, Fragment } from "../deps.ts";
-import type { PageProps, GetStaticData } from "../deps.ts";
+import { Fragment, h } from "../deps.ts";
+import type { GetStaticData, PageProps } from "../deps.ts";
 
 interface Data {
   random: string;
