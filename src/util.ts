@@ -1,9 +1,10 @@
-import { path, fs } from "../deps/mod.ts";
+import { fs, path } from "../deps/mod.ts";
 
 export interface Page {
   path: string;
   name: string;
   route: string;
+  hasGetStaticPaths: boolean;
   hasGetStaticData: boolean;
 }
 
@@ -36,18 +37,33 @@ export async function findPages(pagesDir: string): Promise<Page[]> {
 
     const p = path.join(pagesDir, page);
 
-    const hasGetStaticData = await checkHasGetStaticData(p);
+    const { hasGetStaticData, hasGetStaticPaths } = await checkHasDataHooks(p);
+
+    if (hasGetStaticPaths && !route.includes(":")) {
+      throw new Error("Can not have getStaticPaths in non dynamic file");
+    }
+    if (hasGetStaticData && route.includes(":") && !hasGetStaticPaths) {
+      throw new Error(
+        "Can not have getStaticData in dynamic file without getStaticPaths",
+      );
+    }
 
     return ({
       path: p,
       name,
       route,
       hasGetStaticData,
+      hasGetStaticPaths,
     });
   }));
 }
 
-export async function checkHasGetStaticData(path: string): Promise<boolean> {
+export async function checkHasDataHooks(
+  path: string,
+): Promise<{
+  hasGetStaticPaths: boolean;
+  hasGetStaticData: boolean;
+}> {
   const proc = Deno.run({
     cmd: ["deno", "doc", "--json", path],
     stdout: "piped",
@@ -60,8 +76,15 @@ export async function checkHasGetStaticData(path: string): Promise<boolean> {
   }
   const body = new TextDecoder().decode(out);
   const data: Array<{ kind: string; name: string }> = JSON.parse(body);
-  return data.findIndex((d) =>
-    (d.kind === "variable" || d.kind === "function") &&
-    d.name === "getStaticData"
-  ) !== -1;
+  const hasGetStaticPaths =
+    data.findIndex((d) =>
+      (d.kind === "variable" || d.kind === "function") &&
+      d.name === "getStaticPaths"
+    ) !== -1;
+  const hasGetStaticData =
+    data.findIndex((d) =>
+      (d.kind === "variable" || d.kind === "function") &&
+      d.name === "getStaticData"
+    ) !== -1;
+  return { hasGetStaticPaths, hasGetStaticData };
 }

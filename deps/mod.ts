@@ -1,16 +1,16 @@
 export { rollup } from "https://raw.githubusercontent.com/lucacasonato/denopack/lucafixed/deps.ts";
 export type {
-  Plugin,
-  ResolveIdResult,
-  RollupOptions,
-  RollupOutput,
-  RollupBuild,
-  RollupCache,
+  ModuleFormat,
   OutputAsset,
   OutputBundle,
   OutputChunk,
   OutputOptions,
-  ModuleFormat,
+  Plugin,
+  ResolveIdResult,
+  RollupBuild,
+  RollupCache,
+  RollupOptions,
+  RollupOutput,
 } from "https://raw.githubusercontent.com/lucacasonato/denopack/lucafixed/deps.ts";
 
 export { useCache } from "https://raw.githubusercontent.com/lucacasonato/denopack/lucafixed/plugin/mod.ts";
@@ -49,3 +49,5 @@ export const debounce = _debounce as <
     trailing?: boolean;
   },
 ) => T;
+
+export { compile } from "https://deno.land/x/path_to_regexp@v6.2.0/index.ts";
