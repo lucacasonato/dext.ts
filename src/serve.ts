@@ -1,4 +1,4 @@
-import { colors, oak, dateFormat } from "../deps/mod.ts";
+import { colors, dateFormat, oak } from "../deps/mod.ts";
 import type { Page } from "./util.ts";
 
 export async function serve(
@@ -13,7 +13,8 @@ export async function serve(
       async (context) => {
         await oak.send(
           context,
-          page.name + ".html",
+          (page.hasGetStaticPaths ? context.request.url.pathname : page.name) +
+            ".html",
           { root: options.staticDir },
         );
       },

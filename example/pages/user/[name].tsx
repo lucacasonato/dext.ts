@@ -1,17 +1,60 @@
 import { Fragment, h } from "../../deps.ts";
-import type { PageProps } from "../../deps.ts";
+import type {
+  GetStaticData,
+  GetStaticDataContext,
+  GetStaticPaths,
+  PageProps,
+} from "../../deps.ts";
 
-function UserPage(props: PageProps) {
+interface Props {
+  capitalizedName: string;
+}
+
+function UserPage(props: PageProps<Props>) {
   const name = props.route?.name ?? "";
 
   return (
     <>
-      <h1>This is the page for {name}</h1>
+      <h1>
+        This is the page for {name} - {props.data.capitalizedName}
+      </h1>
       <p>
         <a href="/">Go home</a>
       </p>
     </>
   );
 }
+
+export const getStaticPaths = (): GetStaticPaths => {
+  return {
+    pages: [
+      {
+        route: {
+          name: "luca",
+        },
+      },
+      {
+        route: {
+          name: "bartek",
+        },
+      },
+      {
+        route: {
+          name: "ry",
+        },
+      },
+    ],
+  };
+};
+
+export const getStaticData = (
+  ctx: GetStaticDataContext,
+): GetStaticData<Props> => {
+  return {
+    data: {
+      capitalizedName: (ctx.route!.name as string).toUpperCase(),
+    },
+  };
+};
 
 export default UserPage;

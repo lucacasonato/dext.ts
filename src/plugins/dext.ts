@@ -1,5 +1,6 @@
-import { path, Plugin } from "../../deps/mod.ts";
+import { compile, path, Plugin } from "../../deps/mod.ts";
 import type { Page } from "../util.ts";
+import type { GetStaticDataContext, GetStaticPaths } from "../type.ts";
 
 export function dextPlugin(
   pages: Record<string, Page>,
@@ -41,9 +42,9 @@ function App() {
       <Router>
         ${
             Object.entries(pages).map(([id, page]) =>
-              `<AsyncRoute path="${page.route}" getComponent={() => loadComponent(import("${id}"), ${
-                page.hasGetStaticData ? `"${page.name}.json"` : `undefined`
-              })} />`
+              `<AsyncRoute path="${page.route}" getComponent={(path) => loadComponent(import("${id}"), ${
+                page.hasGetStaticData ? "true" : "false"
+              }, path)} />`
             ).join("\n        ")
           }
         <Route default component={Error404} />
@@ -69,39 +70,90 @@ hydrate(<App />, document.getElementById("__dext")!);`;
             ...file.implicitlyLoadedBefore,
           ];
 
-          const staticData = await getStaticData(component, options);
-          const data = staticData?.data;
+          const paths = page.hasGetStaticPaths
+            ? (await getStaticPaths(component, options))!
+            : { pages: [{ route: undefined }] };
 
-          if (staticData !== undefined) {
+          const createPath = compile(page.route);
+
+          for (const page_ of paths.pages) {
+            const path = page_.route !== undefined
+              ? createPath(page_.route).slice(1)
+              : page.name;
+
+            const staticData = await getStaticData(
+              component,
+              { route: page_.route },
+              options,
+            );
+            const data = staticData?.data;
+
+            if (staticData !== undefined) {
+              this.emitFile({
+                type: "asset",
+                source: JSON.stringify(data),
+                name: "dext JSON data",
+                fileName: `_dext/${path}.json`,
+              });
+            }
+
+            const source = await generatePrerenderedHTML(
+              component,
+              imports,
+              { data, route: page_.route },
+              options,
+            );
+
             this.emitFile({
               type: "asset",
-              source: JSON.stringify(data),
-              name: "dext JSON data",
-              fileName: `${page.name}.json`,
+              source,
+              name: "denopack HTML Asset",
+              fileName: `${path}.html`,
             });
           }
-
-          const source = await generatePrerenderedHTML(
-            component,
-            imports,
-            data,
-            options,
-          );
-
-          this.emitFile({
-            type: "asset",
-            source,
-            name: "denopack HTML Asset",
-            fileName: `${page.name}.html`,
-          });
         }
       }
     },
   };
 }
 
+async function getStaticPaths(
+  component: string,
+  options: { tsconfigPath: string },
+): Promise<GetStaticPaths | undefined> {
+  const resolvedComponent = path.resolve(Deno.cwd(), component);
+
+  const staticDataHostURL = new URL(
+    "./runtime/static_paths_host.ts",
+    import.meta.url,
+  );
+  const proc = Deno.run({
+    cmd: [
+      "deno",
+      "run",
+      "-A",
+      "-c",
+      options.tsconfigPath,
+      staticDataHostURL.toString(),
+      "file://" + resolvedComponent,
+    ],
+    stdout: "piped",
+    stderr: "inherit",
+  });
+  const out = await proc.output();
+  const { success } = await proc.status();
+  if (!success) {
+    console.log(out);
+    throw new Error("Failed to get static paths");
+  }
+  if (out.length === 0) return undefined;
+  const body = new TextDecoder().decode(out);
+  return JSON.parse(body);
+}
+
 async function getStaticData(
   component: string,
+  context: GetStaticDataContext,
   options: { tsconfigPath: string },
 ) {
   const resolvedComponent = path.resolve(Deno.cwd(), component);
@@ -115,15 +167,20 @@ async function getStaticData(
       "deno",
       "run",
       "-A",
-      "--no-check",
       "-c",
       options.tsconfigPath,
       staticDataHostURL.toString(),
       "file://" + resolvedComponent,
     ],
+    stdin: "piped",
     stdout: "piped",
     stderr: "inherit",
   });
+  await Deno.writeAll(
+    proc.stdin,
+    new TextEncoder().encode(JSON.stringify(context)),
+  );
+  proc.stdin.close();
   const out = await proc.output();
   const { success } = await proc.status();
   if (!success) {
@@ -138,7 +195,7 @@ async function getStaticData(
 async function generatePrerenderedHTML(
   component: string,
   imports: string[],
-  data: unknown,
+  context: { data: unknown; route?: Record<string, string | string[]> },
   options: { tsconfigPath: string },
 ) {
   const resolvedComponent = path.resolve(Deno.cwd(), component);
@@ -152,7 +209,6 @@ async function generatePrerenderedHTML(
       "deno",
       "run",
       "-A",
-      "--no-check",
       "-c",
       options.tsconfigPath,
       prerenderHostURL.toString(),
@@ -164,7 +220,7 @@ async function generatePrerenderedHTML(
   });
   await Deno.writeAll(
     proc.stdin,
-    new TextEncoder().encode(JSON.stringify(data)),
+    new TextEncoder().encode(JSON.stringify(context)),
   );
   proc.stdin.close();
   const out = await proc.output();

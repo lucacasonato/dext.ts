@@ -2,10 +2,10 @@ import {
   colors,
   Command,
   CompletionsCommand,
+  debounce,
   fs,
   path,
   RollupCache,
-  debounce,
 } from "./deps/mod.ts";
 import { bundle } from "./src/bundle.ts";
 import { dependencyList } from "./src/dependency_graph.ts";
@@ -16,7 +16,7 @@ try {
   await new Command()
     .throwErrors()
     .name("dext")
-    .version("0.3.0")
+    .version("0.4.0")
     .description("The Preact Framework for Deno")
     .action(function () {
       console.log(this.getHelp());

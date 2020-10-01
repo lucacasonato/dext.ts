@@ -12,7 +12,7 @@ function IndexPage(props: PageProps<Data>) {
       <p>This is the index page.</p>
       <p>The random is {props.data.random}.</p>
       <p>
-        <a href="/user/lucacasonato">Go to @lucacasonato</a>
+        <a href="/user/luca">Go to @luca</a>
       </p>
     </>
   );
