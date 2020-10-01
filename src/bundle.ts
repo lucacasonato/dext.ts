@@ -15,10 +15,10 @@ import {
   useCache,
 } from "../deps/mod.ts";
 import { dextPlugin } from "./plugins/dext.ts";
-import type { Page } from "./util.ts";
+import type { Page, Pages } from "./util.ts";
 
 export async function bundle(
-  pages: Page[],
+  pages: Pages,
   options: {
     rootDir: string;
     outDir: string;
@@ -34,18 +34,12 @@ export async function bundle(
     compact: true,
   };
 
-  const pageMap: Record<string, Page> = {};
-
-  for (const page of pages) {
-    pageMap[page.path] = page;
-  }
-
   const tsconfig = JSON.parse(await Deno.readTextFile(options.tsconfigPath));
 
   const rollupOptions: RollupOptions = {
     input: [],
     plugins: [
-      dextPlugin(pageMap, { tsconfigPath: options.tsconfigPath }),
+      dextPlugin(pages, { tsconfigPath: options.tsconfigPath }),
       ...useCache(tsconfig),
       ...(options.isDev ? [] : [pluginTerserTransform({
         module: true,

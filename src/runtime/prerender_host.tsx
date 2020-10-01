@@ -1,7 +1,7 @@
 import { h } from "./mod.tsx";
 import type { ComponentType } from "./mod.tsx";
-import { render } from "../../../deps/preact-render-to-string/mod.ts";
-import type { PageProps } from "../../type.ts";
+import { render } from "../../deps/preact-render-to-string/mod.ts";
+import type { PageProps } from "./type.ts";
 
 const [Component, rawData]: [
   ComponentType<PageProps>,

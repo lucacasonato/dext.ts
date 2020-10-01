@@ -1,23 +1,33 @@
 import { compile, path, Plugin } from "../../deps/mod.ts";
-import type { Page } from "../util.ts";
 import type { GetStaticDataContext, GetStaticPaths } from "../type.ts";
+import type { Page, Pages } from "../util.ts";
 
 export function dextPlugin(
-  pages: Record<string, Page>,
+  pages: Pages,
   options: { tsconfigPath: string },
 ): Plugin {
-  const runtimeURL = new URL("./runtime/mod.tsx", import.meta.url)
+  const pageMap: Record<string, Page> = {};
+
+  for (const page of pages.pages) {
+    pageMap[page.path] = page;
+  }
+
+  const runtimeURL = new URL("../runtime/mod.tsx", import.meta.url)
     .toString();
+  const appURL = pages.app
+    ? "file://" + pages.app.path
+    : new URL("./default_app.tsx", import.meta.url)
+      .toString();
 
   return {
     name: "dext.ts",
     buildStart() {
       const implicitlyLoadedAfterOneOf = [];
-      for (const component in pages) {
+      for (const component in pageMap) {
         implicitlyLoadedAfterOneOf.push(component);
         this.emitFile({
           id: component,
-          name: pages[component].name.replace("/", "-"),
+          name: pageMap[component].name.replace("/", "-"),
           type: "chunk",
         });
       }
@@ -35,25 +45,28 @@ export function dextPlugin(
       if (id == "dext:///main.js") {
         const bundle =
           `import { h, hydrate, Router, Route, AsyncRoute, Error404, loadComponent } from "${runtimeURL}";
+import App from "${appURL}";
 
-function App() {
+function Dext() {
   return (
     <div>
-      <Router>
-        ${
-            Object.entries(pages).map(([id, page]) =>
-              `<AsyncRoute path="${page.route}" getComponent={(path) => loadComponent(import("${id}"), ${
-                page.hasGetStaticData ? "true" : "false"
-              }, path)} />`
-            ).join("\n        ")
-          }
-        <Route default component={Error404} />
-      </Router>
+      <App>
+        <Router>
+          ${
+              Object.entries(pageMap).map(([id, page]) =>
+                `<AsyncRoute path="${page.route}" getComponent={(path) => loadComponent(import("${id}"), ${
+                  page.hasGetStaticData ? "true" : "false"
+                }, path)} />`
+              ).join("\n        ")
+            }
+          <Route default component={Error404} />
+        </Router>
+      </App>
     </div>
   );
 }
 
-hydrate(<App />, document.getElementById("__dext")!);`;
+hydrate(<Dext />, document.getElementById("__dext")!);`;
         return bundle;
       }
     },
@@ -62,7 +75,7 @@ hydrate(<App />, document.getElementById("__dext")!);`;
         const file = bundle[name];
         if (file.type === "chunk" && file.isEntry) {
           const component = file.facadeModuleId!;
-          const page = pages[component];
+          const page = pageMap[component];
 
           const imports = [
             file.fileName,
@@ -124,7 +137,7 @@ async function getStaticPaths(
   const resolvedComponent = path.resolve(Deno.cwd(), component);
 
   const staticDataHostURL = new URL(
-    "./runtime/static_paths_host.ts",
+    "../runtime/static_paths_host.ts",
     import.meta.url,
   );
   const proc = Deno.run({
@@ -159,7 +172,7 @@ async function getStaticData(
   const resolvedComponent = path.resolve(Deno.cwd(), component);
 
   const staticDataHostURL = new URL(
-    "./runtime/static_data_host.ts",
+    "../runtime/static_data_host.ts",
     import.meta.url,
   );
   const proc = Deno.run({
@@ -201,7 +214,7 @@ async function generatePrerenderedHTML(
   const resolvedComponent = path.resolve(Deno.cwd(), component);
 
   const prerenderHostURL = new URL(
-    "./runtime/prerender_host.tsx",
+    "../runtime/prerender_host.tsx",
     import.meta.url,
   );
   const proc = Deno.run({

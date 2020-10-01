@@ -1,5 +1,10 @@
 import { fs, path } from "../deps/mod.ts";
 
+export interface Pages {
+  pages: Page[];
+  app: Page | undefined;
+}
+
 export interface Page {
   path: string;
   name: string;
@@ -8,18 +13,18 @@ export interface Page {
   hasGetStaticData: boolean;
 }
 
-export async function findPages(pagesDir: string): Promise<Page[]> {
+export async function findPages(pagesDir: string): Promise<Pages> {
   const dir = fs.walk(
     pagesDir,
     { includeDirs: false, includeFiles: true, exts: ["tsx", "jsx"] },
   );
-  const pages: string[] = [];
+  const pagePaths: string[] = [];
   for await (const file of dir) {
     if (file.isFile) {
-      pages.push(path.relative(pagesDir, file.path));
+      pagePaths.push(path.relative(pagesDir, file.path));
     }
   }
-  return await Promise.all(pages.map(async (page) => {
+  const allPages = await Promise.all(pagePaths.map(async (page) => {
     const name = page.substring(0, page.length - path.extname(page).length);
     const parts = name.split("/");
     if (parts[parts.length - 1] === "index") {
@@ -56,6 +61,18 @@ export async function findPages(pagesDir: string): Promise<Page[]> {
       hasGetStaticPaths,
     });
   }));
+
+  const pages = allPages.filter((d) =>
+    !d.name.startsWith("_") && !d.name.includes("/_")
+  );
+  const app = allPages.find((d) => d.name === "_app");
+  if (app?.hasGetStaticData === true) {
+    throw new Error("_app may not have getStaticData");
+  }
+  return {
+    pages,
+    app,
+  };
 }
 
 export async function checkHasDataHooks(

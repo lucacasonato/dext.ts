@@ -1,7 +1,6 @@
+export type { AppProps, GetStaticData, PageProps } from "./src/runtime/type.ts";
 export type {
-  GetStaticData,
   GetStaticDataContext,
   GetStaticPaths,
   GetStaticPathsPage,
-  PageProps,
 } from "./src/type.ts";
