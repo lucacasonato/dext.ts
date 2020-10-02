@@ -24,6 +24,7 @@ export async function findPages(pagesDir: string): Promise<Pages> {
       pagePaths.push(path.relative(pagesDir, file.path));
     }
   }
+  pagePaths.sort();
   const allPages = await Promise.all(pagePaths.map(async (page) => {
     const name = page.substring(0, page.length - path.extname(page).length);
     const parts = name.split(path.SEP_PATTERN);
