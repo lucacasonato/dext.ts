@@ -24,8 +24,10 @@ export async function findPages(pagesDir: string): Promise<Pages> {
       pagePaths.push(path.relative(pagesDir, file.path));
     }
   }
+  pagePaths.sort();
   const allPages = await Promise.all(pagePaths.map(async (page) => {
-    const name = page.substring(0, page.length - path.extname(page).length);
+    const name = page.substring(0, page.length - path.extname(page).length)
+      .replaceAll(new RegExp(path.SEP_PATTERN, "g"), "/");
     const parts = name.split("/");
     if (parts[parts.length - 1] === "index") {
       parts.pop();
@@ -40,7 +42,10 @@ export async function findPages(pagesDir: string): Promise<Pages> {
       return part;
     }).join("/");
 
-    const p = path.join(pagesDir, page);
+    const p = path.join(pagesDir, page).replaceAll(
+      new RegExp(path.SEP_PATTERN, "g"),
+      "/",
+    );
 
     const { hasGetStaticData, hasGetStaticPaths } = await checkHasDataHooks(p);
 
@@ -88,6 +93,7 @@ export async function checkHasDataHooks(
   });
   const out = await proc.output();
   const { success } = await proc.status();
+  proc.close();
   if (!success) {
     throw new Error("Failed to analyze " + path);
   }

@@ -56,11 +56,12 @@ function Dext() {
       <App>
         <Router>
           ${
-            Object.entries(pageMap).map(([id, page]) =>
-              `<AsyncRoute path="${page.route}" getComponent={(path) => loadComponent(import("${id}"), ${
+            Object.entries(pageMap).map(([id, page]) => {
+              console.log(id);
+              return `<AsyncRoute path="${page.route}" getComponent={(path) => loadComponent(import("${id}"), ${
                 page.hasGetStaticData ? "true" : "false"
-              }, path)} />`
-            ).join("\n        ")
+              }, path)} />`;
+            }).join("\n        ")
           }
           <Route default component={Error404} />
         </Router>
@@ -88,12 +89,12 @@ hydrate(<Dext />, document.getElementById("__dext")!);`;
 
           const paths = page.hasGetStaticPaths
             ? (await getStaticPaths(component, options))!
-            : { pages: [{ route: undefined }] };
+            : { pages: [{ route: {} }] };
 
           const createPath = compile(page.route);
 
           for (const page_ of paths.pages) {
-            const path = page_.route !== undefined
+            const path = page.hasGetStaticPaths
               ? createPath(page_.route).slice(1)
               : page.name;
 
@@ -148,6 +149,7 @@ async function getStaticPaths(
       "deno",
       "run",
       "-A",
+      "-q",
       "-c",
       options.tsconfigPath,
       staticDataHostURL.toString(),
@@ -183,6 +185,7 @@ async function getStaticData(
       "deno",
       "run",
       "-A",
+      "-q",
       "-c",
       options.tsconfigPath,
       staticDataHostURL.toString(),
@@ -228,6 +231,7 @@ async function generatePrerenderedHTML(
       "deno",
       "run",
       "-A",
+      "-q",
       "-c",
       options.tsconfigPath,
       prerenderHostURL.toString(),

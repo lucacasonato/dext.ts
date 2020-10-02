@@ -1,7 +1,7 @@
 // deno-lint-ignore triple-slash-reference
 /// <reference types="./preact-async-router.d.ts" />
 
-import { h, Component } from "../preact/mod.ts";
+import { Component, h } from "../preact/mod.ts";
 
 class AsyncRoute extends Component {
   constructor() {
@@ -26,7 +26,7 @@ class AsyncRoute extends Component {
           });
         }
       },
-      Object.assign({}, this.props, this.props.matches)
+      Object.assign({}, this.props, this.props.matches),
     );
 
     // In case returned value was a promise
@@ -56,7 +56,7 @@ class AsyncRoute extends Component {
         },
         () => {
           this.loadComponent();
-        }
+        },
       );
     }
   }
