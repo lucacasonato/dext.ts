@@ -4,7 +4,7 @@ import type { Page, Pages } from "../util.ts";
 
 export function dextPlugin(
   pages: Pages,
-  options: { tsconfigPath: string },
+  options: { tsconfigPath: string; hotRefresh: boolean },
 ): Plugin {
   const pageMap: Record<string, Page> = {};
 
@@ -14,9 +14,11 @@ export function dextPlugin(
 
   const runtimeURL = new URL("../runtime/mod.tsx", import.meta.url)
     .toString();
+  const hotRefreshURL = new URL("../runtime/hot_refresh.ts", import.meta.url)
+    .toString();
   const appURL = pages.app
     ? "file://" + pages.app.path
-    : new URL("./default_app.tsx", import.meta.url)
+    : new URL("../runtime/default_app.tsx", import.meta.url)
       .toString();
 
   return {
@@ -46,6 +48,7 @@ export function dextPlugin(
         const bundle =
           `import { h, hydrate, Router, Route, AsyncRoute, Error404, loadComponent } from "${runtimeURL}";
 import App from "${appURL}";
+${options.hotRefresh ? `import "${hotRefreshURL}";` : ``}
 
 function Dext() {
   return (
@@ -53,12 +56,12 @@ function Dext() {
       <App>
         <Router>
           ${
-              Object.entries(pageMap).map(([id, page]) =>
-                `<AsyncRoute path="${page.route}" getComponent={(path) => loadComponent(import("${id}"), ${
-                  page.hasGetStaticData ? "true" : "false"
-                }, path)} />`
-              ).join("\n        ")
-            }
+            Object.entries(pageMap).map(([id, page]) =>
+              `<AsyncRoute path="${page.route}" getComponent={(path) => loadComponent(import("${id}"), ${
+                page.hasGetStaticData ? "true" : "false"
+              }, path)} />`
+            ).join("\n        ")
+          }
           <Route default component={Error404} />
         </Router>
       </App>

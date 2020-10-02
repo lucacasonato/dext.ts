@@ -15,7 +15,7 @@ import {
   useCache,
 } from "../deps/mod.ts";
 import { dextPlugin } from "./plugins/dext.ts";
-import type { Page, Pages } from "./util.ts";
+import type { Pages } from "./util.ts";
 
 export async function bundle(
   pages: Pages,
@@ -25,6 +25,7 @@ export async function bundle(
     tsconfigPath: string;
     cache?: RollupCache;
     isDev: boolean;
+    hotRefresh: boolean;
   },
 ): Promise<RollupCache | undefined> {
   const outputOptions: OutputOptions = {
@@ -39,7 +40,10 @@ export async function bundle(
   const rollupOptions: RollupOptions = {
     input: [],
     plugins: [
-      dextPlugin(pages, { tsconfigPath: options.tsconfigPath }),
+      dextPlugin(
+        pages,
+        { tsconfigPath: options.tsconfigPath, hotRefresh: options.hotRefresh },
+      ),
       ...useCache(tsconfig),
       ...(options.isDev ? [] : [pluginTerserTransform({
         module: true,

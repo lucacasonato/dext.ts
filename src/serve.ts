@@ -1,11 +1,39 @@
-import { colors, dateFormat, oak } from "../deps/mod.ts";
+import {
+  colors,
+  dateFormat,
+  isWebSocketCloseEvent,
+  oak,
+  WebSocket,
+} from "../deps/mod.ts";
 import type { Page } from "./util.ts";
 
 export async function serve(
   pages: Page[],
-  options: { staticDir: string; address: string; quiet: boolean },
+  options: {
+    staticDir: string;
+    address: string;
+    quiet: boolean;
+    hotRefresh?: AsyncIterableIterator<void>;
+  },
 ): Promise<void> {
+  const hmrListeners = new Set<WebSocket>();
+  const app = new oak.Application({ state: hmrListeners });
   const router = new oak.Router();
+
+  if (options.hotRefresh) {
+    router.get("/_dext/hr", async (ctx) => {
+      if (!ctx.isUpgradable) {
+        throw new Error("no websocket for you");
+      }
+      const socket = await ctx.upgrade();
+      hmrListeners.add(socket);
+      for await (const ev of socket) {
+        if (isWebSocketCloseEvent(ev)) {
+          hmrListeners.delete(socket);
+        }
+      }
+    });
+  }
 
   for (const page of pages) {
     router.get(
@@ -20,8 +48,6 @@ export async function serve(
       },
     );
   }
-
-  const app = new oak.Application();
 
   if (!options.quiet) {
     app.use(async (ctx, next) => {
@@ -50,5 +76,18 @@ export async function serve(
     ));
   });
 
-  await app.listen(options.address);
+  async function hotRefreshLoop() {
+    for await (const _ of options.hotRefresh!) {
+      for (const ws of hmrListeners) {
+        await ws.send("reload");
+      }
+    }
+  }
+
+  await Promise.all(
+    [
+      app.listen(options.address),
+      options.hotRefresh ? hotRefreshLoop() : Promise.resolve(),
+    ],
+  );
 }
