@@ -56,11 +56,12 @@ function Dext() {
       <App>
         <Router>
           ${
-            Object.entries(pageMap).map(([id, page]) =>
-              `<AsyncRoute path="${page.route}" getComponent={(path) => loadComponent(import("${id}"), ${
+            Object.entries(pageMap).map(([id, page]) => {
+              console.log(id);
+              return `<AsyncRoute path="${page.route}" getComponent={(path) => loadComponent(import("${id}"), ${
                 page.hasGetStaticData ? "true" : "false"
-              }, path)} />`
-            ).join("\n        ")
+              }, path)} />`;
+            }).join("\n        ")
           }
           <Route default component={Error404} />
         </Router>
