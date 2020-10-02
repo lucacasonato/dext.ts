@@ -23,7 +23,7 @@ export { emitFiles } from "https://raw.githubusercontent.com/lucacasonato/denopa
 export * as colors from "https://deno.land/std@0.71.0/fmt/colors.ts";
 export * as path from "https://deno.land/std@0.71.0/path/mod.ts";
 export * as fs from "https://deno.land/std@0.71.0/fs/mod.ts";
-export { pooledMap } from "https://deno.land/std@0.68.0/async/pool.ts";
+export { pooledMap, deferred } from "https://deno.land/std@0.71.0/async/mod.ts";
 export { format as dateFormat } from "https://deno.land/std@0.71.0/datetime/mod.ts";
 
 export {
@@ -32,10 +32,12 @@ export {
   HelpCommand,
 } from "https://deno.land/x/cliffy@v0.14.1/command/mod.ts";
 
-// path_to_regexp
 export * as oak from "https://deno.land/x/oak@v6.2.0/mod.ts";
 // path_to_regexp
 export { compile } from "https://deno.land/x/oak@v6.2.0/deps.ts";
+// WebSocket
+export { isWebSocketCloseEvent } from "https://deno.land/std@0.69.0/ws/mod.ts";
+export type { WebSocket } from "https://deno.land/std@0.69.0/ws/mod.ts";
 
 export { gzipEncode } from "https://deno.land/x/wasm_gzip@v1.0.0/mod.ts";
 export { compress as brotliEncode } from "https://deno.land/x/brotli@v0.1.4/mod.ts";

@@ -3,6 +3,7 @@ import {
   Command,
   CompletionsCommand,
   debounce,
+  deferred,
   fs,
   path,
   RollupCache,
@@ -30,10 +31,7 @@ try {
       "The address to listen on.",
       { default: ":3000" },
     )
-    .option(
-      "--quiet",
-      "If access logs should be printed.",
-    )
+    .option("--quiet", "If access logs should be printed.")
     .description("Start a built application.")
     .action(start)
     .command("dev [root]")
@@ -41,6 +39,11 @@ try {
       "-a --address <address>",
       "The address to listen on.",
       { default: ":3000" },
+    )
+    .option(
+      "--hot-refresh [enabled:boolean]",
+      "If hot refresh should be disabled.",
+      { default: true },
     )
     .description("Start your application in development mode.")
     .action(dev)
@@ -80,7 +83,10 @@ async function build(_options: unknown, root?: string) {
 
   // Do bundling
   const outDir = path.join(dextDir, "static");
-  await bundle(pages, { rootDir: root, outDir, tsconfigPath, isDev: false });
+  await bundle(
+    pages,
+    { rootDir: root, outDir, tsconfigPath, isDev: false, hotRefresh: false },
+  );
   console.log(colors.green(colors.bold("Build success.")));
 }
 
@@ -109,7 +115,10 @@ async function start(
   );
 }
 
-async function dev(options: { address: string }, maybeRoot?: string) {
+async function dev(
+  options: { address: string; hotRefresh: boolean },
+  maybeRoot?: string,
+) {
   const root = path.resolve(Deno.cwd(), maybeRoot ?? "");
 
   const tsconfigPath = path.join(root, "tsconfig.json");
@@ -131,6 +140,15 @@ async function dev(options: { address: string }, maybeRoot?: string) {
   await fs.ensureDir(dextDir);
   const outDir = path.join(dextDir, "static");
 
+  let doHotRefresh = deferred();
+  const hotRefresh = (async function* () {
+    while (true) {
+      await doHotRefresh;
+      doHotRefresh = deferred();
+      yield;
+    }
+  })();
+
   const run = debounce(async function () {
     const start = new Date();
     console.log(colors.cyan(colors.bold("Started build...")));
@@ -138,8 +156,16 @@ async function dev(options: { address: string }, maybeRoot?: string) {
     try {
       cache = (await bundle(
         pages,
-        { rootDir: root, outDir, tsconfigPath, cache, isDev: true },
+        {
+          rootDir: root,
+          outDir,
+          tsconfigPath,
+          cache,
+          isDev: true,
+          hotRefresh: options.hotRefresh,
+        },
       ))!;
+      doHotRefresh.resolve();
       console.log(
         colors.green(
           colors.bold(
@@ -164,19 +190,23 @@ async function dev(options: { address: string }, maybeRoot?: string) {
     .map(path.fromFileUrl)
     .filter((dep) => dep.startsWith(root));
 
-  const server = serve(
-    pages.pages,
-    { staticDir: outDir, address: options.address, quiet: true },
-  );
-
-  await run();
-
-  const watcher = (async () => {
+  (async () => {
     for await (const { kind } of Deno.watchFs(toWatch)) {
       if (kind === "any" || kind === "access") continue;
       await run();
     }
   })();
 
-  await Promise.all([server, watcher]);
+  const server = serve(
+    pages.pages,
+    {
+      staticDir: outDir,
+      address: options.address,
+      quiet: true,
+      hotRefresh,
+    },
+  );
+
+  await run();
+  await server;
 }
