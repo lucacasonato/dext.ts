@@ -5,7 +5,11 @@ import {
 import { exists } from "https://deno.land/std@0.72.0/fs/mod.ts";
 
 Deno.test("[integration test] simple", async () => {
-  await Deno.remove("./tests/fixtures/simple/.dext", { recursive: true });
+  try {
+    await Deno.remove("./tests/fixtures/simple/.dext", { recursive: true });
+  } catch {
+    /* It doesn't matter if deleting fails. */
+  }
 
   const proc = Deno.run({
     cmd: ["deno", "run", "-A", "--unstable", "../../../cli.ts", "build"],
