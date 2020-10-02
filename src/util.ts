@@ -26,7 +26,7 @@ export async function findPages(pagesDir: string): Promise<Pages> {
   }
   const allPages = await Promise.all(pagePaths.map(async (page) => {
     const name = page.substring(0, page.length - path.extname(page).length);
-    const parts = name.split("/");
+    const parts = name.split(path.SEP_PATTERN);
     if (parts[parts.length - 1] === "index") {
       parts.pop();
     }
@@ -41,6 +41,7 @@ export async function findPages(pagesDir: string): Promise<Pages> {
     }).join("/");
 
     const p = path.join(pagesDir, page);
+    console.log(path);
 
     const { hasGetStaticData, hasGetStaticPaths } = await checkHasDataHooks(p);
 
