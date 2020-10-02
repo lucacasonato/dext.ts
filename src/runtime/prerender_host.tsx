@@ -1,13 +1,15 @@
 import { h } from "./mod.tsx";
 import type { ComponentType } from "./mod.tsx";
 import { render } from "../../deps/preact-render-to-string/mod.ts";
-import type { PageProps } from "./type.ts";
+import type { AppProps, PageProps } from "./type.ts";
 
-const [Component, rawData]: [
+const [Component, App, rawData]: [
   ComponentType<PageProps>,
+  ComponentType<AppProps>,
   Uint8Array,
 ] = await Promise.all([
   import(Deno.args[0]).then((m) => m.default),
+  import(Deno.args[1]).then((m) => m.default),
   Deno.readAll(Deno.stdin),
 ]);
 const { data, route } = rawData.length == 0
@@ -16,7 +18,9 @@ const { data, route } = rawData.length == 0
 console.log(
   render(
     <div>
-      <Component route={route} data={data} />
+      <App>
+        <Component route={route} data={data} />
+      </App>
     </div>,
   ),
 );
