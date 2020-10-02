@@ -41,7 +41,7 @@ export async function findPages(pagesDir: string): Promise<Pages> {
     }).join("/");
 
     const p = path.join(pagesDir, page);
-    console.log(path);
+    console.log(p);
 
     const { hasGetStaticData, hasGetStaticPaths } = await checkHasDataHooks(p);
 
