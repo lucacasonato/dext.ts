@@ -17,6 +17,9 @@ jobs:
         os: [macOS-latest, windows-latest, ubuntu-latest]
 
     steps:
+      - name: Disable autocrlf
+        run: git config --global core.autocrlf false
+
       - name: Setup repo
         uses: actions/checkout@v2
 
