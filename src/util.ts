@@ -40,7 +40,10 @@ export async function findPages(pagesDir: string): Promise<Pages> {
       return part;
     }).join("/");
 
-    const p = path.join(pagesDir, page).replaceAll(path.SEP_PATTERN, "/");
+    const p = path.join(pagesDir, page).replaceAll(
+      new RegExp(path.SEP_PATTERN, "g"),
+      "/",
+    );
     console.log(p);
 
     const { hasGetStaticData, hasGetStaticPaths } = await checkHasDataHooks(p);
