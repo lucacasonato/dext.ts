@@ -3,7 +3,6 @@ const [{ getStaticData }, rawData]: [
   { getStaticData: Function },
   Uint8Array,
 ] = await Promise.all([
-  // deno-lint-ignore no-undef
   import(Deno.args[0]),
   Deno.readAll(Deno.stdin),
 ]);

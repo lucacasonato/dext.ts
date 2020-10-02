@@ -25,5 +25,11 @@ jobs:
         with:
           deno-version: ${{ matrix.deno }} # tests across multiple Deno versions
 
+      - name: Check formatting
+        run: deno fmt --check
+
+      - name: Install dependencies
+        run: deno cache --no-check ./deps/mod.ts
+
       - name: Run Tests
         run: deno test -A --unstable

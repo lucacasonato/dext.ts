@@ -23,7 +23,7 @@ export { emitFiles } from "https://raw.githubusercontent.com/lucacasonato/denopa
 export * as colors from "https://deno.land/std@0.71.0/fmt/colors.ts";
 export * as path from "https://deno.land/std@0.71.0/path/mod.ts";
 export * as fs from "https://deno.land/std@0.71.0/fs/mod.ts";
-export { pooledMap, deferred } from "https://deno.land/std@0.71.0/async/mod.ts";
+export { deferred, pooledMap } from "https://deno.land/std@0.71.0/async/mod.ts";
 export { format as dateFormat } from "https://deno.land/std@0.71.0/datetime/mod.ts";
 
 export {

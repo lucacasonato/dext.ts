@@ -3,10 +3,10 @@
 /// <reference lib="dom" />
 
 import {
-  VNode,
+  ClassAttributes,
   Component,
   PreactDOMAttributes,
-  ClassAttributes,
+  VNode,
 } from "./preact.d.ts";
 
 type Defaultize<Props, Defaults> =
