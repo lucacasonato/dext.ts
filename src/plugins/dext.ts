@@ -117,7 +117,7 @@ hydrate(<Dext />, document.getElementById("__dext")!);`;
               component,
               imports,
               { data, route: page_.route },
-              options,
+              { ...options, appURL },
             );
 
             this.emitFile({
@@ -211,8 +211,11 @@ async function getStaticData(
 async function generatePrerenderedHTML(
   component: string,
   imports: string[],
-  context: { data: unknown; route?: Record<string, string | string[]> },
-  options: { tsconfigPath: string },
+  context: {
+    data: unknown;
+    route?: Record<string, string | string[]>;
+  },
+  options: { tsconfigPath: string; appURL: string },
 ) {
   const resolvedComponent = path.resolve(Deno.cwd(), component);
 
@@ -229,6 +232,7 @@ async function generatePrerenderedHTML(
       options.tsconfigPath,
       prerenderHostURL.toString(),
       "file://" + resolvedComponent,
+      options.appURL,
     ],
     stdin: "piped",
     stdout: "piped",
