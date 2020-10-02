@@ -44,7 +44,6 @@ export async function findPages(pagesDir: string): Promise<Pages> {
       new RegExp(path.SEP_PATTERN, "g"),
       "/",
     );
-    console.log(p);
 
     const { hasGetStaticData, hasGetStaticPaths } = await checkHasDataHooks(p);
 
@@ -92,6 +91,7 @@ export async function checkHasDataHooks(
   });
   const out = await proc.output();
   const { success } = await proc.status();
+  proc.close();
   if (!success) {
     throw new Error("Failed to analyze " + path);
   }

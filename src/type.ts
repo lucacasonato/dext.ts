@@ -1,5 +1,5 @@
 export interface GetStaticDataContext {
-  route?: Record<string, string | string[]>;
+  route: Record<string, string | string[]>;
 }
 
 export interface GetStaticPaths {

@@ -1,37 +1,91 @@
 import {
   assert,
   assertEquals,
-} from "https://deno.land/std@0.72.0/testing/asserts.ts";
-import { exists } from "https://deno.land/std@0.72.0/fs/mod.ts";
+  assertStringContains,
+  exists,
+  join,
+} from "../deps/test.ts";
+import { integrationTest } from "./test_utils.ts";
 
-Deno.test("[integration test] simple", async () => {
-  try {
-    await Deno.remove("./tests/fixtures/simple/.dext", { recursive: true });
-  } catch {
-    /* It doesn't matter if deleting fails. */
-  }
+integrationTest({
+  name: "simple",
+  cmd: ["build"],
+  clean: true,
+  async after(ctx) {
+    assert(ctx.status.success);
 
-  const proc = Deno.run({
-    cmd: ["deno", "run", "-A", "--unstable", "../../../cli.ts", "build"],
-    cwd: "./tests/fixtures/simple",
-  });
-  const status = await proc.status();
-  assert(status.success);
-  proc.close();
+    assertEquals(
+      JSON.parse(
+        await Deno.readTextFile(join(ctx.dir, ".dext", "pagemap.json")),
+      ),
+      [{ name: "index", route: "/" }],
+    );
 
-  const pagemap = JSON.parse(
-    await Deno.readTextFile(
-      "./tests/fixtures/simple/.dext/pagemap.json",
-    ),
-  );
-  assertEquals(pagemap, [
-    {
-      name: "index",
-      route: "/",
-    },
-  ]);
+    const staticdir = join(ctx.dir, ".dext", "static");
 
-  assert(await exists("./tests/fixtures/simple/.dext/static/index.html"));
-  assert(await exists("./tests/fixtures/simple/.dext/static/index.html.gz"));
-  assert(await exists("./tests/fixtures/simple/.dext/static/index.html.br"));
+    const indexhtml = join(staticdir, "index.html");
+    assert(await exists(indexhtml));
+    assert(await exists(`${indexhtml}.gz`));
+    assert(await exists(`${indexhtml}.br`));
+
+    const index = await Deno.readTextFile(indexhtml);
+    assertStringContains(index, `<div id="__dext">`);
+    assertStringContains(index, "<h1>Hello World</h1>");
+  },
+});
+
+integrationTest({
+  name: "static_generation",
+  cmd: ["build"],
+  clean: true,
+  async after(ctx) {
+    assert(ctx.status.success);
+
+    assertEquals(
+      JSON.parse(
+        await Deno.readTextFile(join(ctx.dir, ".dext", "pagemap.json")),
+      ),
+      [
+        { name: "index", route: "/" },
+        { name: "uppercase/[str]", route: "/uppercase/:str" },
+      ],
+    );
+
+    const staticdir = join(ctx.dir, ".dext", "static");
+
+    const indexhtml = join(staticdir, "index.html");
+    assert(await exists(indexhtml));
+    assert(await exists(`${indexhtml}.gz`));
+    assert(await exists(`${indexhtml}.br`));
+    const html = await Deno.readTextFile(indexhtml);
+    assertStringContains(html, `<div id="__dext">`);
+    assertStringContains(html, "<h1>Hello world</h1>");
+
+    const lucaPath = join(staticdir, "uppercase", "luca.html");
+    assertStringContains(
+      await Deno.readTextFile(lucaPath),
+      "<h1>luca LUCA</h1>",
+    );
+    const bartekPath = join(staticdir, "uppercase", "bartek.html");
+    assertStringContains(
+      await Deno.readTextFile(bartekPath),
+      "<h1>bartek BARTEK</h1>",
+    );
+    const ryanPath = join(staticdir, "uppercase", "ryan.html");
+    assertStringContains(
+      await Deno.readTextFile(ryanPath),
+      "<h1>ryan RYAN</h1>",
+    );
+
+    const indexJSONPath = join(staticdir, "_dext", "index.json");
+    assert(await exists(indexhtml));
+    assertEquals(await Deno.readTextFile(indexJSONPath), `{"hello":"world"}`);
+
+    const lucaJSONPath = join(staticdir, "_dext", "uppercase", "luca.json");
+    assertEquals(await Deno.readTextFile(lucaJSONPath), `{"str":"LUCA"}`);
+    const bartekJSONPath = join(staticdir, "_dext", "uppercase", "bartek.json");
+    assertEquals(await Deno.readTextFile(bartekJSONPath), `{"str":"BARTEK"}`);
+    const ryanJSONPath = join(staticdir, "_dext", "uppercase", "ryan.json");
+    assertEquals(await Deno.readTextFile(ryanJSONPath), `{"str":"RYAN"}`);
+  },
 });
