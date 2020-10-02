@@ -1,8 +1,8 @@
-import { h, hydrate } from "../../../deps/preact/mod.ts";
-import type { ComponentType } from "../../../deps/preact/mod.ts";
-import { Route, Router } from "../../../deps/preact-router/mod.ts";
-import AsyncRoute from "../../../deps/preact-async-router/mod.js";
-import type { PageProps } from "../../type.ts";
+import { h, hydrate } from "../../deps/preact/mod.ts";
+import type { ComponentType } from "../../deps/preact/mod.ts";
+import { Route, Router } from "../../deps/preact-router/mod.ts";
+import AsyncRoute from "../../deps/preact-async-router/mod.js";
+import type { PageProps } from "./type.ts";
 
 export async function loadComponent(
   componentPromise: Promise<{ default: ComponentType<PageProps> }>,

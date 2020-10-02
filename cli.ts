@@ -72,7 +72,7 @@ async function build(_options: unknown, root?: string) {
   const pagemapPath = path.join(dextDir, "pagemap.json");
   await Deno.writeTextFile(
     pagemapPath,
-    JSON.stringify(pages.map((page) => ({
+    JSON.stringify(pages.pages.map((page) => ({
       name: page.name,
       route: page.route,
     }))),
@@ -156,14 +156,16 @@ async function dev(options: { address: string }, maybeRoot?: string) {
     }
   }, 100);
 
-  const deps = (await dependencyList(pages.map((page) => page.path)));
+  const pagesPaths = pages.pages.map((page) => page.path);
+  if (pages.app) pagesPaths.push(pages.app.path);
+  const deps = await dependencyList(pagesPaths);
   const toWatch = deps
     .filter((dep) => dep.startsWith(`file://`))
     .map(path.fromFileUrl)
     .filter((dep) => dep.startsWith(root));
 
   const server = serve(
-    pages,
+    pages.pages,
     { staticDir: outDir, address: options.address, quiet: true },
   );
 
