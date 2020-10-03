@@ -65,6 +65,11 @@ integrationTest({
     assertStringContains(html, `<div id="__dext">`);
     assertStringContains(html, "<h1>Hello world</h1>");
 
+    assertEquals(
+      await Deno.readTextFile(join(staticdir, "test.txt")),
+      "hello world",
+    );
+
     const lucaPath = join(staticdir, "uppercase", "luca.html");
     assertStringContains(
       await Deno.readTextFile(lucaPath),
