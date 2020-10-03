@@ -19,7 +19,7 @@ try {
   await new Command()
     .throwErrors()
     .name("dext")
-    .version("0.4.0")
+    .version("0.5.0")
     .description("The Preact Framework for Deno")
     .action(function () {
       console.log(this.getHelp());

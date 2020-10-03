@@ -1,5 +1,8 @@
 export function makeMatcher() {
-  let cache: Record<string, { keys: { name: string }[]; regexp: RegExp }> = {};
+  let cache: Record<string, {
+    keys: { name: string; repeat: boolean }[];
+    regexp: RegExp;
+  }> = {};
 
   // obtains a cached regexp version of the pattern
   const getRegexp = (pattern: string) =>
@@ -8,16 +11,18 @@ export function makeMatcher() {
   return (
     pattern: string,
     path: string,
-  ): [boolean, Record<string, string> | null] => {
+  ): [boolean, Record<string, string | string[]> | null] => {
     const { regexp, keys } = getRegexp(pattern || "");
     const out = regexp.exec(path);
 
     if (!out) return [false, null];
 
     // formats an object with matched params
-    const params = keys.reduce<Record<string, string>>(
+    const params = keys.reduce<Record<string, string | string[]>>(
       (params, key, i) => {
-        params[key.name] = out[i + 1];
+        params[key.name] = key.repeat
+          ? (out[i + 1] ? out[i + 1].split("/") : [])
+          : out[i + 1];
         return params;
       },
       {},
@@ -61,7 +66,7 @@ const pathToRegexp = (pattern: string) => {
 
     const prev = pattern.substring(lastIndex, match.index - prefix);
 
-    keys.push({ name: segment });
+    keys.push({ name: segment, repeat });
     lastIndex = groupRx.lastIndex;
 
     result += escapeRx(prev) + rxForSegment(repeat, optional, prefix);

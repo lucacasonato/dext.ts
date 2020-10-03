@@ -4,7 +4,7 @@ The Preact Framework for Deno. Dext.ts is heavily inspired by Next.js.
 
 - Zero config
 - Pre-render pages at build time (SSG)
-- Tiny (example is only 5.9KB of JS)
+- Tiny (example is only 5.75KB of JS)
 - Client hydration
 - Built-in routing
 - Zero config TypeScript support
@@ -16,7 +16,7 @@ The Preact Framework for Deno. Dext.ts is heavily inspired by Next.js.
 To install, run the following command. This will make the `dext` CLI available in your path.
 
 ```
-deno install --allow-read --allow-write --allow-env --allow-net --allow-run --unstable -f -n dext https://deno.land/x/dext@0.4.0/cli.ts
+deno install --allow-read --allow-write --allow-env --allow-net --allow-run --unstable -f -n dext https://deno.land/x/dext@0.5.0/cli.ts
 ```
 
 ## Example
