@@ -54,15 +54,15 @@ export function dextPlugin(
       }
       if (id == "dext:///main.js") {
         const routes = Object.entries(pageMap).map(([id, page]) => {
-          return `["${page.route}", () => import("dext-page://${id}"), ${
+          return `["${page.route}", [() => import("dext-page://${id}"), ${
             page.hasGetStaticData ? "true" : "false"
-          }]`;
+          }]]`;
         }).join(",");
-        const bundle = `import { Dext, h, hydrate } from "${runtimeURL}";
+        const bundle = `import { start } from "${runtimeURL}";
 import App from "${appURL}";
 ${options.hotRefresh ? `import "${hotRefreshURL}";` : ``}
 
-hydrate(<Dext routes={[${routes}]} app={App} />, document.getElementById("__dext")!);`;
+start([${routes}], App);`;
         return bundle;
       }
     },
