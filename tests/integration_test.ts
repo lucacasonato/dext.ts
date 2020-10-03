@@ -18,7 +18,7 @@ integrationTest({
       JSON.parse(
         await Deno.readTextFile(join(ctx.dir, ".dext", "pagemap.json")),
       ),
-      [{ name: "index", route: "/" }],
+      [{ name: "index", route: "/", hasGetStaticPaths: false }],
     );
 
     const staticdir = join(ctx.dir, ".dext", "static");
@@ -46,8 +46,8 @@ integrationTest({
         await Deno.readTextFile(join(ctx.dir, ".dext", "pagemap.json")),
       ),
       [
-        { name: "index", route: "/" },
-        { name: "uppercase/[str]", route: "/uppercase/:str" },
+        { name: "index", route: "/", hasGetStaticPaths: false },
+        { name: "uppercase/[str]", route: "/uppercase/:str", hasGetStaticPaths: true },
       ],
     );
 
