@@ -41,8 +41,6 @@ integrationTest({
   async after(ctx) {
     assert(ctx.status.success);
     
-    console.log(join(ctx.dir, ".dext", "pagemap.json"))
-
     assertEquals(
       JSON.parse(
         await Deno.readTextFile(join(ctx.dir, ".dext", "pagemap.json")),
