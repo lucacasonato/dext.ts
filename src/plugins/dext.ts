@@ -57,7 +57,6 @@ function Dext() {
         <Router>
           ${
             Object.entries(pageMap).map(([id, page]) => {
-              console.log(id);
               return `<AsyncRoute path="${page.route}" getComponent={(path) => loadComponent(import("${id}"), ${
                 page.hasGetStaticData ? "true" : "false"
               }, path)} />`;

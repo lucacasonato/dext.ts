@@ -6,7 +6,9 @@ import {
   deferred,
   fs,
   path,
+  prettyBytes,
   RollupCache,
+  Table,
 } from "./deps/mod.ts";
 import { bundle } from "./src/bundle.ts";
 import { dependencyList } from "./src/dependency_graph.ts";
@@ -83,11 +85,65 @@ async function build(_options: unknown, root?: string) {
 
   // Do bundling
   const outDir = path.join(dextDir, "static");
-  await bundle(
+  const { stats } = await bundle(
     pages,
     { rootDir: root, outDir, tsconfigPath, isDev: false, hotRefresh: false },
   );
-  console.log(colors.green(colors.bold("Build success.")));
+  console.log(colors.green(colors.bold("Build success.\n")));
+
+  if (stats) {
+    const sharedKeys = Object.keys(stats.shared);
+
+    new Table()
+      .header([
+        colors.bold("Page"),
+        colors.bold("Size"),
+        colors.bold("First Load JS"),
+      ])
+      .body(
+        [
+          ...stats.routes.map((route, i) => {
+            const prefix = stats.routes.length === 1
+              ? "-"
+              : i === 0
+              ? "┌"
+              : i === stats.routes.length - 1
+              ? "└"
+              : "├";
+
+            return [
+              `${prefix} ${route.hasGetStaticData ? "●" : "○"} ${route.route}`,
+              prettyBytes(route.size.brotli),
+              prettyBytes(route.firstLoad.brotli),
+            ];
+          }),
+          [],
+          [
+            "+ First Load JS shared by all",
+            prettyBytes(stats.framework.brotli),
+            "",
+          ],
+          ...sharedKeys.map((name, i) => {
+            const size = stats.shared[name];
+            const isLast = i === (sharedKeys.length - 1);
+            return [
+              `  ${isLast ? "└" : "├"} ${name}`,
+              prettyBytes(size.brotli),
+              "",
+            ];
+          }),
+        ],
+      ).padding(2).render();
+    console.log();
+    console.log("○  (Static)  automatically rendered as static HTML");
+    console.log(
+      "●  (SSG)     automatically generated as static HTML + JSON (uses getStaticData)",
+    );
+    console.log();
+    console.log(
+      colors.gray("File sizes are measured after brotli compression."),
+    );
+  }
 }
 
 async function start(
@@ -154,7 +210,7 @@ async function dev(
     console.log(colors.cyan(colors.bold("Started build...")));
 
     try {
-      cache = (await bundle(
+      const out = (await bundle(
         pages,
         {
           rootDir: root,
@@ -164,7 +220,8 @@ async function dev(
           isDev: true,
           hotRefresh: options.hotRefresh,
         },
-      ))!;
+      ));
+      cache = out.cache!;
       doHotRefresh.resolve();
       console.log(
         colors.green(

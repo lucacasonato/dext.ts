@@ -31,6 +31,7 @@ export {
   CompletionsCommand,
   HelpCommand,
 } from "https://deno.land/x/cliffy@v0.14.1/command/mod.ts";
+export { Table } from "https://deno.land/x/cliffy@v0.14.1/table/mod.ts";
 
 export * as oak from "https://deno.land/x/oak@v6.2.0/mod.ts";
 // path_to_regexp
@@ -54,3 +55,5 @@ export const debounce = _debounce as <
     trailing?: boolean;
   },
 ) => T;
+
+export { prettyBytes } from "https://raw.githubusercontent.com/BrunnerLivio/deno-pretty-bytes/db6d9ede681f666f5b6f58aa35ba5b638c820f84/prettyBytes.ts";
