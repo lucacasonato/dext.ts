@@ -1,8 +1,8 @@
 import { h, hydrate } from "../../deps/preact/mod.ts";
 import type { ComponentType } from "../../deps/preact/mod.ts";
-import { Route, Router } from "../../deps/preact-router/mod.ts";
 import AsyncRoute from "../../deps/preact-async-router/mod.js";
 import type { AppProps, PageProps } from "./type.ts";
+import { Route, Router } from "./router/mod.ts";
 
 export { h, hydrate };
 export type { ComponentType };
@@ -23,10 +23,10 @@ export function Dext(props: DextProps) {
   return <div>
     <App>
       <Router>
-        {props.routes.map((routes) => {
+        {props.routes.map((route) => {
           return <AsyncRoute
-            path={routes[0]}
-            getComponent={(path) => loadComponent(routes[1](), routes[2], path)}
+            path={route[0]}
+            getComponent={(path) => loadComponent(route[1](), route[2], path)}
           />;
         })}
         <Route default component={Error404} />
