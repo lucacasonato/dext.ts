@@ -47,7 +47,11 @@ integrationTest({
       ),
       [
         { name: "index", route: "/", hasGetStaticPaths: false },
-        { name: "uppercase/[str]", route: "/uppercase/:str", hasGetStaticPaths: true },
+        {
+          name: "uppercase/[str]",
+          route: "/uppercase/:str",
+          hasGetStaticPaths: true,
+        },
       ],
     );
 
