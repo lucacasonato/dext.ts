@@ -85,7 +85,9 @@ hydrate(<Dext />, document.getElementById("__dext")!);`;
       for (const name in bundle) {
         const file = bundle[name];
         if (file.type === "chunk" && file.isEntry) {
-          const component = file.facadeModuleId!.substring("dext-page://".length);
+          const component = file.facadeModuleId!.substring(
+            "dext-page://".length,
+          );
           const page = pageMap[component];
 
           const imports = [
