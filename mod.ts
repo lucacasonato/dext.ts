@@ -4,3 +4,4 @@ export type {
   GetStaticPaths,
   GetStaticPathsPage,
 } from "./src/type.ts";
+export { useLocation } from "./src/runtime/router/location.ts";
