@@ -4,7 +4,7 @@ The Preact Framework for Deno. Dext.ts is heavily inspired by Next.js.
 
 - Zero config
 - Pre-render pages at build time (SSG)
-- Tiny (example is only 5.9KB of JS)
+- Tiny (example is only 5.75KB of JS)
 - Client hydration
 - Built-in routing
 - Zero config TypeScript support
