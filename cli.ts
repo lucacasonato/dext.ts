@@ -141,7 +141,7 @@ async function build(_options: unknown, root?: string) {
     );
     console.log();
     console.log(
-      colors.gray("All displayed sizes are for the brotli compressed JS."),
+      colors.gray("File sizes are measured after brotli compression."),
     );
   }
 }
