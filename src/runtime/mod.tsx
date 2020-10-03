@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "../../deps/preact/hooks.ts";
 import type { AppProps, PageProps } from "./type.ts";
 import { Router } from "./router/router.ts";
 import { useLocation } from "./router/location.ts";
+import { initRouter } from "./router/interceptor.ts";
 
 type Route = [
   route: string,
@@ -22,6 +23,9 @@ export async function start(routes: Route[], app: ComponentType<AppProps>) {
   if (!route) throw new Error("Failed to match inital route.");
 
   const initialPage = await loadComponent(route[1][0](), route[1][1], path);
+
+  // sets up event listeners on <a> elements
+  initRouter(router);
 
   hydrate(
     <Dext router={router} app={app} initialPage={initialPage} />,
@@ -50,7 +54,13 @@ function Dext(props: {
 
   useEffect(() => {
     let cancelled = false;
-
+    if (route) {
+      loadComponent(route[1][0](), route[1][1], path).then((page) => {
+        if (!cancelled) setPage([page]);
+      });
+    } else {
+      setPage([null]);
+    }
     () => cancelled = true;
   }, [route]);
 

@@ -7,9 +7,7 @@ export class Router<T> {
 
   constructor(private routes: Route<T>[]) {}
 
-  getRoute(
-    path: string,
-  ):
+  getRoute(path: string):
     | [Route<T>, Record<string, string | string[]>]
     | [null, Record<string, string | string[]>] {
     for (const route of this.routes) {

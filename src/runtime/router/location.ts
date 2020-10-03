@@ -30,7 +30,7 @@ export const useLocation = () => {
     // unfortunately, we can't rely on `path` value here, since it can be stale,
     // that's why we store the last pathname in a ref.
     const checkForUpdates = () => {
-      const pathname = location.pathname;
+      const { pathname } = location;
       prevPath.current !== pathname && update((prevPath.current = pathname));
     };
 
