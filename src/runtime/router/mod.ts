@@ -1,3 +1,7 @@
+// Dervied from https://github.com/preactjs/preact-router
+// Copyright (c) 2015 Jason Miller
+// Licenced under MIT Licence
+
 // deno-lint-ignore-file no-undef
 
 import {
