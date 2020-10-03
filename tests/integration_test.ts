@@ -40,6 +40,8 @@ integrationTest({
   clean: true,
   async after(ctx) {
     assert(ctx.status.success);
+    
+    console.log(join(ctx.dir, ".dext", "pagemap.json"))
 
     assertEquals(
       JSON.parse(
