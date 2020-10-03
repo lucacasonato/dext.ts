@@ -2,14 +2,44 @@ import { h, hydrate } from "../../deps/preact/mod.ts";
 import type { ComponentType } from "../../deps/preact/mod.ts";
 import { Route, Router } from "../../deps/preact-router/mod.ts";
 import AsyncRoute from "../../deps/preact-async-router/mod.js";
-import type { PageProps } from "./type.ts";
+import type { AppProps, PageProps } from "./type.ts";
+
+export { h, hydrate };
+export type { ComponentType };
+
+export interface DextProps {
+  routes: DextRoute[];
+  app: ComponentType<AppProps>;
+}
+
+export type DextRoute = [
+  route: string,
+  component: () => Promise<{ default: ComponentType<PageProps> }>,
+  hasStaticData: boolean,
+];
+
+export function Dext(props: DextProps) {
+  const App = props.app;
+  return <div>
+    <App>
+      <Router>
+        {props.routes.map((routes) => {
+          return <AsyncRoute
+            path={routes[0]}
+            getComponent={(path) => loadComponent(routes[1](), routes[2], path)}
+          />;
+        })}
+        <Route default component={Error404} />
+      </Router>
+    </App>
+  </div>;
+}
 
 export async function loadComponent(
   componentPromise: Promise<{ default: ComponentType<PageProps> }>,
   hasStaticData: boolean,
   path: string,
 ) {
-  console.log(path);
   const [Component, data]: [
     ComponentType<PageProps>,
     unknown,
@@ -21,7 +51,7 @@ export async function loadComponent(
           headers: { accepts: "application/json" },
         });
         if (req.status === 404) return undefined;
-        return await req.json();
+        return req.json();
       }
       return undefined;
     })(),
@@ -32,9 +62,6 @@ export async function loadComponent(
   };
 }
 
-export function Error404() {
+function Error404() {
   return <div>404 not found</div>;
 }
-
-export { AsyncRoute, h, hydrate, Route, Router };
-export type { ComponentType };
