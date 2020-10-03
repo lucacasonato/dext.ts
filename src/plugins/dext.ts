@@ -53,31 +53,16 @@ export function dextPlugin(
         }";`;
       }
       if (id == "dext:///main.js") {
-        const bundle =
-          `import { h, hydrate, Router, Route, AsyncRoute, Error404, loadComponent } from "${runtimeURL}";
+        const routes = Object.entries(pageMap).map(([id, page]) => {
+          return `["${page.route}", () => import("dext-page://${id}"), ${
+            page.hasGetStaticData ? "true" : "false"
+          }]`;
+        }).join(",");
+        const bundle = `import { Dext, h, hydrate } from "${runtimeURL}";
 import App from "${appURL}";
 ${options.hotRefresh ? `import "${hotRefreshURL}";` : ``}
 
-function Dext() {
-  return (
-    <div>
-      <App>
-        <Router>
-          ${
-            Object.entries(pageMap).map(([id, page]) => {
-              return `<AsyncRoute path="${page.route}" getComponent={(path) => loadComponent(import("dext-page://${id}"), ${
-                page.hasGetStaticData ? "true" : "false"
-              }, path)} />`;
-            }).join("\n        ")
-          }
-          <Route default component={Error404} />
-        </Router>
-      </App>
-    </div>
-  );
-}
-
-hydrate(<Dext />, document.getElementById("__dext")!);`;
+hydrate(<Dext routes={[${routes}]} app={App} />, document.getElementById("__dext")!);`;
         return bundle;
       }
     },
