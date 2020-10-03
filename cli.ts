@@ -80,6 +80,7 @@ async function build(_options: unknown, root?: string) {
     JSON.stringify(pages.pages.map((page) => ({
       name: page.name,
       route: page.route,
+      hasGetStaticPaths: page.hasGetStaticPaths,
     }))),
   );
 
