@@ -9,7 +9,7 @@ function IndexPage(props: PageProps<Data>) {
   return (
     <>
       <h1>Hello World!!!</h1>
-      <p>This is the index page.</p>
+      <p>{typeof navigator === "object" ? "Client" : "SSG"}</p>
       <p>The random is {props.data.random}.</p>
       <p>
         <a href="/user/luca">Go to @luca</a>

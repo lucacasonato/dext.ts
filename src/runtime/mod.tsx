@@ -1,45 +1,72 @@
 import { h, hydrate } from "../../deps/preact/mod.ts";
 import type { ComponentType } from "../../deps/preact/mod.ts";
-import AsyncRoute from "../../deps/preact-async-router/mod.js";
+import { useEffect, useMemo, useState } from "../../deps/preact/hooks.ts";
 import type { AppProps, PageProps } from "./type.ts";
-import { Route, Router } from "./router/mod.ts";
+import { Router } from "./router/router.ts";
+import { useLocation } from "./router/location.ts";
 
-export { h, hydrate };
-export type { ComponentType };
-
-export interface DextProps {
-  routes: DextRoute[];
-  app: ComponentType<AppProps>;
-}
-
-export type DextRoute = [
+type Route = [
   route: string,
+  data: RouteData,
+];
+
+type RouteData = [
   component: () => Promise<{ default: ComponentType<PageProps> }>,
   hasStaticData: boolean,
 ];
 
-export function Dext(props: DextProps) {
+export async function start(routes: Route[], app: ComponentType<AppProps>) {
+  const router = new Router<RouteData>(routes);
+  const path = location.pathname;
+  const [route] = router.getRoute(path);
+  if (!route) throw new Error("Failed to match inital route.");
+
+  const initialPage = await loadComponent(route[1][0](), route[1][1], path);
+
+  hydrate(
+    <Dext router={router} app={app} initialPage={initialPage} />,
+    document.getElementById("__dext")!,
+  );
+}
+
+type PageComponent = ComponentType<{
+  route: Record<string, string | string[]>;
+}>;
+
+function Dext(props: {
+  router: Router<RouteData>;
+  app: ComponentType<AppProps>;
+  initialPage: PageComponent;
+}) {
+  const [path] = useLocation();
+  const [route, match] = useMemo(
+    () => props.router.getRoute(path),
+    [props.router, path],
+  );
+
+  const [[Page], setPage] = useState<[PageComponent | null]>([
+    props.initialPage,
+  ]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    () => cancelled = true;
+  }, [route]);
+
   const App = props.app;
   return <div>
     <App>
-      <Router>
-        {props.routes.map((route) => {
-          return <AsyncRoute
-            path={route[0]}
-            getComponent={(path) => loadComponent(route[1](), route[2], path)}
-          />;
-        })}
-        <Route default component={Error404} />
-      </Router>
+      {Page === null ? <Error404 /> : <Page route={match!} />}
     </App>
   </div>;
 }
 
-export async function loadComponent(
+async function loadComponent(
   componentPromise: Promise<{ default: ComponentType<PageProps> }>,
   hasStaticData: boolean,
   path: string,
-) {
+): Promise<PageComponent> {
   const [Component, data]: [
     ComponentType<PageProps>,
     unknown,
@@ -56,9 +83,9 @@ export async function loadComponent(
       return undefined;
     })(),
   ]);
-  return (route: Record<string, string>) => {
+  return (props: { route: Record<string, string | string[]> }) => {
     if (hasStaticData && data === undefined) return <Error404 />;
-    return <Component route={route} data={data} />;
+    return <Component route={props.route} data={data} />;
   };
 }
 
