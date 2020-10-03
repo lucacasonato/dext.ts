@@ -40,7 +40,7 @@ integrationTest({
   clean: true,
   async after(ctx) {
     assert(ctx.status.success);
-    
+
     assertEquals(
       JSON.parse(
         await Deno.readTextFile(join(ctx.dir, ".dext", "pagemap.json")),
