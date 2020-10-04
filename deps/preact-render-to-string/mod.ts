@@ -1,4 +1,1 @@
-// @deno-types="./preact-render-to-string.d.ts"
-export {
-  default as render,
-} from "https://cdn.skypack.dev/preact-render-to-string";
+export * from "https://x.lcas.dev/preact-render-to-string@5.1.10/mod.js";

@@ -1,2 +1,1 @@
-// @deno-types="./preact-hooks.d.ts"
-export * from "https://cdn.skypack.dev/preact/hooks";
+export * from "https://x.lcas.dev/preact@10.5.3/hooks.js";

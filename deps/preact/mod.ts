@@ -1,2 +1,1 @@
-// @deno-types="./preact.d.ts"
-export * from "https://cdn.skypack.dev/preact";
+export * from "https://x.lcas.dev/preact@10.5.3/mod.js";
