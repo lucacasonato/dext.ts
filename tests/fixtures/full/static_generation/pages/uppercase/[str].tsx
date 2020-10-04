@@ -1,4 +1,4 @@
-import { h } from "../../deps.ts";
+import { h, useLocation } from "../../deps.ts";
 import type {
   GetStaticData,
   GetStaticDataContext,
@@ -11,8 +11,13 @@ interface Props {
 }
 
 function IndexPage(props: PageProps<Props>) {
+  const [path] = useLocation();
   return (
-    <h1>{props.route!.str} {props.data.str}</h1>
+    <h1>
+      {props.route!.str}
+      {props.data.str}
+      {path}
+    </h1>
   );
 }
 

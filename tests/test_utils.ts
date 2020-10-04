@@ -5,14 +5,12 @@ const decoder = new TextDecoder();
 export function integrationTest(options: {
   name: string;
   cmd: string[];
-  after(
-    ctx: {
-      stdout: string;
-      stderr: string;
-      status: Deno.ProcessStatus;
-      dir: string;
-    },
-  ): Promise<void>;
+  after(ctx: {
+    stdout: string;
+    stderr: string;
+    status: Deno.ProcessStatus;
+    dir: string;
+  }): Promise<void>;
   ignore?: boolean;
   clean?: boolean;
 }) {
@@ -26,15 +24,14 @@ export function integrationTest(options: {
       await copy("./", root);
       await ensureDir(dir);
 
-      const cli = new URL("../cli.ts", import.meta.url).toString();
-
       const proc = Deno.run({
         cmd: [
           "deno",
           "run",
           "-A",
           "--unstable",
-          cli,
+          "--no-check",
+          join(root, "cli.ts"),
           ...options.cmd,
         ],
         cwd: dir,

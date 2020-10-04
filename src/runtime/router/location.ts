@@ -6,6 +6,11 @@ import {
   useState,
 } from "../../../deps/preact/hooks.ts";
 
+let initialLocation = "";
+export function initLocation(location: string) {
+  initialLocation = location;
+}
+
 /**
  * History API docs @see https://developer.mozilla.org/en-US/docs/Web/API/History
  */
@@ -18,31 +23,35 @@ export const events = [
   eventReplaceState,
 ] as const;
 
-export const useLocation = () => {
-  const [path, update] = useState(location.pathname);
+export function useLocation() {
+  const [path, update] = useState(
+    typeof location !== "undefined" ? location.pathname : initialLocation,
+  );
   const prevPath = useRef(path);
 
-  useEffect(() => {
-    patchHistoryEvents();
+  if (typeof document !== "undefined") {
+    useEffect(() => {
+      patchHistoryEvents();
 
-    // this function checks if the location has been changed since the
-    // last render and updates the state only when needed.
-    // unfortunately, we can't rely on `path` value here, since it can be stale,
-    // that's why we store the last pathname in a ref.
-    const checkForUpdates = () => {
-      const { pathname } = location;
-      prevPath.current !== pathname && update((prevPath.current = pathname));
-    };
+      // this function checks if the location has been changed since the
+      // last render and updates the state only when needed.
+      // unfortunately, we can't rely on `path` value here, since it can be stale,
+      // that's why we store the last pathname in a ref.
+      const checkForUpdates = () => {
+        const { pathname } = location;
+        prevPath.current !== pathname && update((prevPath.current = pathname));
+      };
 
-    events.map((e) => addEventListener(e, checkForUpdates));
+      events.map((e) => addEventListener(e, checkForUpdates));
 
-    // it's possible that an update has occurred between render and the effect handler,
-    // so we run additional check on mount to catch these updates. Based on:
-    // https://gist.github.com/bvaughn/e25397f70e8c65b0ae0d7c90b731b189
-    checkForUpdates();
+      // it's possible that an update has occurred between render and the effect handler,
+      // so we run additional check on mount to catch these updates. Based on:
+      // https://gist.github.com/bvaughn/e25397f70e8c65b0ae0d7c90b731b189
+      checkForUpdates();
 
-    return () => events.map((e) => removeEventListener(e, checkForUpdates));
-  }, []);
+      return () => events.map((e) => removeEventListener(e, checkForUpdates));
+    }, []);
+  }
 
   // the 2nd argument of the `useLocation` return value is a function
   // that allows to perform a navigation.
@@ -56,7 +65,7 @@ export const useLocation = () => {
   );
 
   return [path, navigate] as const;
-};
+}
 
 // While History API does have `popstate` event, the only
 // proper way to listen to changes via `push/replaceState`
@@ -69,21 +78,19 @@ let patched = 0;
 const patchHistoryEvents = () => {
   if (patched) return;
 
-  ([eventPushState, eventReplaceState] as const).map(
-    (type) => {
-      const original = history[type];
-      history[type] = function (
-        data: unknown,
-        title: string,
-        url?: string | null | undefined,
-      ) {
-        const result = original.apply(this, [data, title, url]);
-        const event = new Event(type);
-        dispatchEvent(event);
-        return result;
-      };
-    },
-  );
+  ([eventPushState, eventReplaceState] as const).map((type) => {
+    const original = history[type];
+    history[type] = function (
+      data: unknown,
+      title: string,
+      url?: string | null | undefined,
+    ) {
+      const result = original.apply(this, [data, title, url]);
+      const event = new Event(type);
+      dispatchEvent(event);
+      return result;
+    };
+  });
 
   return (patched = 1);
 };

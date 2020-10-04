@@ -2,6 +2,7 @@ import { h } from "../../deps/preact/mod.ts";
 import type { ComponentType } from "../../deps/preact/mod.ts";
 import { render } from "../../deps/preact-render-to-string/mod.ts";
 import type { AppProps, PageProps } from "./type.ts";
+import { initLocation } from "./router/location.ts";
 
 const [Component, App, rawData]: [
   ComponentType<PageProps>,
@@ -12,9 +13,10 @@ const [Component, App, rawData]: [
   import(Deno.args[1]).then((m) => m.default),
   Deno.readAll(Deno.stdin),
 ]);
-const { data, route } = rawData.length == 0
+const { data, route, path } = rawData.length == 0
   ? undefined
   : JSON.parse(new TextDecoder().decode(rawData));
+initLocation(path);
 console.log(
   render(
     <div>

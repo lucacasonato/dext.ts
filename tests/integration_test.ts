@@ -73,17 +73,17 @@ integrationTest({
     const lucaPath = join(staticdir, "uppercase", "luca.html");
     assertStringContains(
       await Deno.readTextFile(lucaPath),
-      "<h1>luca LUCA</h1>",
+      "<h1>luca LUCA /uppercase/luca</h1>",
     );
     const bartekPath = join(staticdir, "uppercase", "bartek.html");
     assertStringContains(
       await Deno.readTextFile(bartekPath),
-      "<h1>bartek BARTEK</h1>",
+      "<h1>bartek BARTEK /uppercase/bartek</h1>",
     );
     const ryanPath = join(staticdir, "uppercase", "ryan.html");
     assertStringContains(
       await Deno.readTextFile(ryanPath),
-      "<h1>ryan RYAN</h1>",
+      "<h1>ryan RYAN /uppercase/ryan</h1>",
     );
 
     const indexJSONPath = join(staticdir, "_dext", "index.json");

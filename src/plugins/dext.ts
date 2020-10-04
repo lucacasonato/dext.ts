@@ -12,14 +12,12 @@ export function dextPlugin(
     pageMap[page.path] = page;
   }
 
-  const runtimeURL = new URL("../runtime/mod.tsx", import.meta.url)
-    .toString();
+  const runtimeURL = new URL("../runtime/mod.tsx", import.meta.url).toString();
   const hotRefreshURL = new URL("../runtime/hot_refresh.ts", import.meta.url)
     .toString();
   const appURL = pages.app
     ? "file://" + pages.app.path
-    : new URL("../runtime/default_app.tsx", import.meta.url)
-      .toString();
+    : new URL("../runtime/default_app.tsx", import.meta.url).toString();
 
   return {
     name: "dext.ts",
@@ -49,15 +47,19 @@ export function dextPlugin(
     load(id) {
       if (id.startsWith("dext-page://")) {
         return `export { default } from "${
-          id.substring("dext-page://".length)
+          id.substring(
+            "dext-page://".length,
+          )
         }";`;
       }
       if (id == "dext:///main.js") {
-        const routes = Object.entries(pageMap).map(([id, page]) => {
-          return `["${page.route}", [() => import("dext-page://${id}"), ${
-            page.hasGetStaticData ? "true" : "false"
-          }]]`;
-        }).join(",");
+        const routes = Object.entries(pageMap)
+          .map(([id, page]) => {
+            return `["${page.route}", [() => import("dext-page://${id}"), ${
+              page.hasGetStaticData ? "true" : "false"
+            }]]`;
+          })
+          .join(",");
         const bundle = `import { start } from "${runtimeURL}";
 import App from "${appURL}";
 ${options.hotRefresh ? `import "${hotRefreshURL}";` : ``}
@@ -111,7 +113,7 @@ start([${routes}], App);`;
             const source = await generatePrerenderedHTML(
               component,
               imports,
-              { data, route: page_.route },
+              { data, route: page_.route, path: `/${path}` },
               { ...options, appURL },
             );
 
@@ -209,6 +211,7 @@ async function generatePrerenderedHTML(
   component: string,
   imports: string[],
   context: {
+    path: string;
     data: unknown;
     route?: Record<string, string | string[]>;
   },
@@ -253,7 +256,8 @@ async function generatePrerenderedHTML(
     .map((name) => `<link rel="modulepreload" href="/${name}" as="script">`)
     .join("");
   const scripts = imports
-    .map((name) => `<script src="/${name}" type="module"></script>`).join("");
+    .map((name) => `<script src="/${name}" type="module"></script>`)
+    .join("");
 
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />${preloads}</head><body><noscript>This page requires JavaScript to function.</noscript><div id="__dext">${body}</div>${scripts}</body></html>`;
 }
