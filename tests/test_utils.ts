@@ -54,7 +54,7 @@ export function integrationTest(options: {
         throw err;
       }
 
-      await Deno.remove(tmp, { recursive: true });
+      await Deno.remove(root, { recursive: true });
     },
   });
 }
