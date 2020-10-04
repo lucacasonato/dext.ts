@@ -278,6 +278,9 @@ async function create(_options: unknown, maybeRoot?: string) {
   const root = path.resolve(Deno.cwd(), maybeRoot ?? "");
   await fs.ensureDir(root);
 
+  const gitIgnorePath = path.join(root, ".gitignore");
+  await Deno.writeTextFile(gitIgnorePath, "/.dext\n");
+
   const tsconfigPath = path.join(root, "tsconfig.json");
   await Deno.writeTextFile(
     tsconfigPath,

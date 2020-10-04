@@ -107,6 +107,7 @@ integrationTest({
     assert(ctx.status.success);
 
     const expectedFiles = [
+      ".gitignore",
       "deps.ts",
       "tsconfig.json",
       "pages/index.tsx",
