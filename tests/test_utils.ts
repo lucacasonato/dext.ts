@@ -54,7 +54,11 @@ export function integrationTest(options: {
         throw err;
       }
 
-      await Deno.remove(root, { recursive: true });
+      // FIXME(lucacasonato): can't delete folders in tempdir on windows?!
+      // see https://github.com/lucacasonato/dext.ts/pull/22/checks?check_run_id=1205241971#step:7:61
+      if (Deno.build.os !== "windows") {
+        await Deno.remove(tmp, { recursive: true });
+      }
     },
   });
 }
