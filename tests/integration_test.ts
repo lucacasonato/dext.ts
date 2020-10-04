@@ -31,6 +31,11 @@ integrationTest({
     const index = await Deno.readTextFile(indexhtml);
     assertStringContains(index, `<div id="__dext">`);
     assertStringContains(index, "<h1>Hello World</h1>");
+
+    assertEquals(
+      await Deno.readTextFile(join(staticdir, "test.txt")),
+      "hello world",
+    );
   },
 });
 

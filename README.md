@@ -1,5 +1,7 @@
 # dext.ts
 
+![logo](example/public/logo.png)
+
 The Preact Framework for Deno. Dext.ts is heavily inspired by Next.js.
 
 - Zero config
