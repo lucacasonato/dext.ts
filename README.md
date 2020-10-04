@@ -18,8 +18,27 @@ The Preact Framework for Deno. Dext.ts is heavily inspired by Next.js.
 To install, run the following command. This will make the `dext` CLI available in your path.
 
 ```
-deno install --allow-read --allow-write --allow-env --allow-net --allow-run --unstable -f -n dext https://deno.land/x/dext@0.5.0/cli.ts
+deno install --allow-read --allow-write --allow-env --allow-net --allow-run --unstable -f -n dext https://deno.land/x/dext@0.6.0/cli.ts
 ```
+
+## Getting started
+
+To create a new project run `dext create myproject`. This will scaffold a new dext project in the
+`myproject` folder. This folder contains a few files:
+
+- `deps.ts` contains all of your projects dependencies.
+- `pages/index.tsx` is the source for the `/` of your project.
+- `pages/user/[name].tsx` is the source for all routes at `/user/[name]` (e.g. `/user/luca` and `/user/bartek`).
+- `tsconfig.json` is the TypeScript configuration that the project uses.
+- `.gitignore` tells `git` to ignore the `.dext` folder that is created by `dext dev` and `dext build`.
+
+Now that you have a project set up, you can start the development server using `dext dev`.
+After a few seconds you can view your built page at http://127.0.0.1:3000. When you change
+any of the files in the `pages` directory, your project will be rebuilt automatically, and
+the page will be automatically reloaded in the browser.
+
+When you are ready to deploy to production, run `dext build`. This will generate a production
+optimized build. You can start a production webserver to serve this build with `dext start`.
 
 ## Example
 
