@@ -4,7 +4,7 @@ import {
   useEffect,
   useRef,
   useState,
-} from "../../../deps/preact/hooks.js";
+} from "../../../deps/preact/hooks.ts";
 
 /**
  * History API docs @see https://developer.mozilla.org/en-US/docs/Web/API/History
