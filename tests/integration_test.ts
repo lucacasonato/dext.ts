@@ -100,7 +100,7 @@ integrationTest({
 });
 
 integrationTest({
-  name: "simple",
+  name: "simple_create",
   cmd: ["create"],
   clean: true,
   async after(ctx) {
