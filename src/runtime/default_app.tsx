@@ -1,4 +1,4 @@
-import { h } from "../../deps/preact/mod.ts";
+import { h } from "../../deps/preact/mod.js";
 import type { AppProps } from "./type.ts";
 
 function App(props: AppProps) {

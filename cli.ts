@@ -301,7 +301,7 @@ async function create(_options: unknown, maybeRoot?: string) {
 
   const depsPath = path.join(root, "deps.ts");
   const depsText =
-    `export { Fragment, h } from "https://deno.land/x/dext@${VERSION}/deps/preact/mod.ts";
+    `export { Fragment, h } from "https://deno.land/x/dext@${VERSION}/deps/preact/mod.js";
 export type {
   AppProps,
   GetStaticData,

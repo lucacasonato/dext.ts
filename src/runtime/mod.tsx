@@ -1,6 +1,6 @@
-import { h, hydrate } from "../../deps/preact/mod.ts";
-import type { ComponentType } from "../../deps/preact/mod.ts";
-import { useEffect, useMemo, useState } from "../../deps/preact/hooks.ts";
+import { h, hydrate } from "../../deps/preact/mod.js";
+import type { ComponentType } from "../../deps/preact/mod.js";
+import { useEffect, useMemo, useState } from "../../deps/preact/hooks.js";
 import type { AppProps, PageProps } from "./type.ts";
 import { Router } from "./router/router.ts";
 import { useLocation } from "./router/location.ts";
