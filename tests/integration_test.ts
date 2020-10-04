@@ -31,6 +31,11 @@ integrationTest({
     const index = await Deno.readTextFile(indexhtml);
     assertStringContains(index, `<div id="__dext">`);
     assertStringContains(index, "<h1>Hello World</h1>");
+
+    assertEquals(
+      await Deno.readTextFile(join(staticdir, "test.txt")),
+      "hello world",
+    );
   },
 });
 
@@ -64,11 +69,6 @@ integrationTest({
     const html = await Deno.readTextFile(indexhtml);
     assertStringContains(html, `<div id="__dext">`);
     assertStringContains(html, "<h1>Hello world</h1>");
-
-    assertEquals(
-      await Deno.readTextFile(join(staticdir, "test.txt")),
-      "hello world",
-    );
 
     const lucaPath = join(staticdir, "uppercase", "luca.html");
     assertStringContains(
