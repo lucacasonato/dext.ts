@@ -15,11 +15,13 @@ import { dependencyList } from "./src/dependency_graph.ts";
 import { serve } from "./src/serve.ts";
 import { findPages } from "./src/util.ts";
 
+const VERSION = "0.5.0";
+
 try {
   await new Command()
     .throwErrors()
     .name("dext")
-    .version("0.5.0")
+    .version(VERSION)
     .description("The Preact Framework for Deno")
     .action(function () {
       console.log(this.getHelp());
@@ -49,6 +51,9 @@ try {
     )
     .description("Start your application in development mode.")
     .action(dev)
+    .command("create [root]")
+    .description("Scaffold new application.")
+    .action(create)
     .command("completions", new CompletionsCommand())
     .parse(Deno.args);
 } catch (err) {
@@ -267,4 +272,93 @@ async function dev(
 
   await run();
   await server;
+}
+
+async function create(_options: unknown, maybeRoot?: string) {
+  const root = path.resolve(Deno.cwd(), maybeRoot ?? "");
+  await fs.ensureDir(root);
+
+  const tsconfigPath = path.join(root, "tsconfig.json");
+  await Deno.writeTextFile(
+    tsconfigPath,
+    JSON.stringify({
+      "compilerOptions": {
+        "lib": ["esnext", "dom", "deno.ns"],
+        "jsx": "react",
+        "jsxFactory": "h",
+        "jsxFragmentFactory": "Fragment",
+        "importsNotUsedAsValues": "error",
+        "isolatedModules": true,
+      },
+    }),
+  );
+
+  const pagesDir = path.join(root, "pages");
+  await fs.ensureDir(pagesDir);
+
+  const depsPath = path.join(root, "deps.ts");
+  const depsText =
+    `export { h, Fragment } from "https://deno.land/x/dext@${VERSION}/deps/preact/mod.ts";
+export type { PageProps } from "https://deno.land/x/dext@${VERSION}/mod.ts";
+`;
+  await Deno.writeTextFile(depsPath, depsText);
+
+  const indexPath = path.join(pagesDir, "index.tsx");
+  const indexText = `import { h, Fragment } from "../deps.ts";
+import type { PageProps, GetStaticData } from "../deps.ts";
+
+interface Data {
+  random: string;
+}
+
+function IndexPage(props: PageProps<Data>) {
+  return (
+    <>
+      <h1>Hello World!!!</h1>
+      <p>This is the index page.</p>
+      <p>The random is {props.data.random}.</p>
+      <p>
+        <a href="/user/lucacasonato">Go to @lucacasonato</a>
+      </p>
+    </>
+  );
+}
+
+export const getStaticData = (): GetStaticData<Data> => {
+  return {
+    data: {
+      random: Math.random().toString(),
+    },
+  };
+};
+
+export default IndexPage;
+`;
+  await Deno.writeTextFile(indexPath, indexText);
+
+  const userDir = path.join(pagesDir, "user");
+  await fs.ensureDir(userDir);
+
+  const userPath = path.join(userDir, "[name].tsx");
+  const userText = `import { h, Fragment } from "../../deps.ts";
+import type { PageProps } from "../../deps.ts";
+
+function UserPage(props: PageProps) {
+  const name = props.route?.name ?? "";
+
+  return (
+    <>
+      <h1>This is the page for {name}</h1>
+      <p>
+        <a href="/">Go home</a>
+      </p>
+    </>
+  );
+}
+
+export default UserPage;
+`;
+  await Deno.writeTextFile(userPath, userText);
+
+  console.log(colors.green(colors.bold(`New project created in ${root}`)));
 }
