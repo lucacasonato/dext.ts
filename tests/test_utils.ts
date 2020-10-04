@@ -1,3 +1,5 @@
+import { copy, ensureDir, join } from "../deps/test.ts";
+
 const decoder = new TextDecoder();
 
 export function integrationTest(options: {
@@ -18,18 +20,13 @@ export function integrationTest(options: {
     name: `[integration] ${options.name} ${options.cmd.join(" ")}`,
     ignore: options.ignore,
     async fn() {
-      if (options.clean) {
-        try {
-          await Deno.remove(
-            `./tests/fixtures/${options.name}/.dext`,
-            { recursive: true },
-          );
-        } catch {
-          /* It doesn't matter if deleting fails. */
-        }
-      }
+      const tmp = await Deno.makeTempDir();
+      const root = join(tmp, "dextts");
+      const dir = join(root, `./tests/fixtures/full/${options.name}`);
+      await copy("./", root);
+      await ensureDir(dir);
 
-      const dir = `./tests/fixtures/full/${options.name}`;
+      const cli = new URL("../cli.ts", import.meta.url).toString();
 
       const proc = Deno.run({
         cmd: [
@@ -37,7 +34,7 @@ export function integrationTest(options: {
           "run",
           "-A",
           "--unstable",
-          "../../../../cli.ts",
+          cli,
           ...options.cmd,
         ],
         cwd: dir,
@@ -50,12 +47,14 @@ export function integrationTest(options: {
       proc.close();
 
       try {
-        await options.after({ stdout, stderr, status, dir });
+        await options.after({ stdout, stderr, status, dir: dir });
       } catch (err) {
         console.log("-- START STDOUT --\n", stdout, "\n-- END STDOUT --");
         console.log("-- START STDERR --\n", stderr, "\n-- END STDERR --");
         throw err;
       }
+
+      await Deno.remove(tmp, { recursive: true });
     },
   });
 }
