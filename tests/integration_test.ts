@@ -98,3 +98,25 @@ integrationTest({
     assertEquals(await Deno.readTextFile(ryanJSONPath), `{"str":"RYAN"}`);
   },
 });
+
+integrationTest({
+  name: "simple_create",
+  cmd: ["create"],
+  clean: true,
+  async after(ctx) {
+    assert(ctx.status.success);
+
+    const expectedFiles = [
+      ".gitignore",
+      "deps.ts",
+      "tsconfig.json",
+      "pages/index.tsx",
+      "pages/user/[name].tsx",
+    ];
+
+    for (const expectedFile of expectedFiles) {
+      const p = join(ctx.dir, expectedFile);
+      assert(await exists(p));
+    }
+  },
+});
