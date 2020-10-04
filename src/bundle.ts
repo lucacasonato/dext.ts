@@ -87,7 +87,12 @@ export async function bundle(
   const build = await rollup(rollupOptions) as RollupBuild;
   const generated = await persistSourceMaps(build.generate, outputOptions);
 
-  await Deno.mkdir(outDir, { recursive: true });
+  const publicDir = path.join(options.rootDir, "public");
+  if (await fs.exists(publicDir)) {
+    await fs.copy(publicDir, outDir);
+  } else {
+    await Deno.mkdir(outDir, { recursive: true });
+  }
   await emitFiles(generated, outDir);
 
   let stats: BundleStats | undefined = undefined;
