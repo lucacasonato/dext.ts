@@ -298,8 +298,14 @@ async function create(_options: unknown, maybeRoot?: string) {
 
   const depsPath = path.join(root, "deps.ts");
   const depsText =
-    `export { h, Fragment } from "https://deno.land/x/dext@${VERSION}/deps/preact/mod.ts";
-export type { PageProps } from "https://deno.land/x/dext@${VERSION}/mod.ts";
+    `export { Fragment, h } from "https://deno.land/x/dext@${VERSION}/deps/preact/mod.ts";
+export type {
+  AppProps,
+  GetStaticData,
+  GetStaticDataContext,
+  GetStaticPaths,
+  PageProps,
+} from "https://deno.land/x/dext@${VERSION}/mod.ts";
 `;
   await Deno.writeTextFile(depsPath, depsText);
 
