@@ -134,8 +134,6 @@ export async function bundle(
     const routes: BundleStatsRoute[] = [];
     const shared: Record<string, FileSize> = {};
 
-    console.log("s", stats);
-
     const chunks = generated.output.filter((d) =>
       d.type === "chunk"
     ) as OutputChunk[];
