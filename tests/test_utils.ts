@@ -26,7 +26,7 @@ export function integrationTest(options: {
       await copy("./", root);
       await ensureDir(dir);
 
-      const cli = new URL("../cli.ts", root).toString();
+      const cli = new URL("../cli.ts", import.meta.url).toString();
 
       const proc = Deno.run({
         cmd: [
