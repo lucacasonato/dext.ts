@@ -18,7 +18,7 @@ export const events = [
   eventReplaceState,
 ] as const;
 
-export const useLocation = () => {
+export function useLocation() {
   const [path, update] = useState(location.pathname);
   const prevPath = useRef(path);
 
@@ -56,7 +56,7 @@ export const useLocation = () => {
   );
 
   return [path, navigate] as const;
-};
+}
 
 // While History API does have `popstate` event, the only
 // proper way to listen to changes via `push/replaceState`
@@ -69,21 +69,19 @@ let patched = 0;
 const patchHistoryEvents = () => {
   if (patched) return;
 
-  ([eventPushState, eventReplaceState] as const).map(
-    (type) => {
-      const original = history[type];
-      history[type] = function (
-        data: unknown,
-        title: string,
-        url?: string | null | undefined,
-      ) {
-        const result = original.apply(this, [data, title, url]);
-        const event = new Event(type);
-        dispatchEvent(event);
-        return result;
-      };
-    },
-  );
+  ([eventPushState, eventReplaceState] as const).map((type) => {
+    const original = history[type];
+    history[type] = function (
+      data: unknown,
+      title: string,
+      url?: string | null | undefined,
+    ) {
+      const result = original.apply(this, [data, title, url]);
+      const event = new Event(type);
+      dispatchEvent(event);
+      return result;
+    };
+  });
 
   return (patched = 1);
 };
