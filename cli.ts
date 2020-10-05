@@ -247,11 +247,14 @@ async function dev(
 
   const pagesPaths = pages.pages.map((page) => page.path);
   if (pages.app) pagesPaths.push(pages.app.path);
+  if (pages.document) pagesPaths.push(pages.document.path);
   const deps = await dependencyList(pagesPaths);
   const toWatch = deps
     .filter((dep) => dep.startsWith(`file://`))
     .map(path.fromFileUrl)
     .filter((dep) => dep.startsWith(root));
+  const publicDir = path.join(root, "public");
+  if (fs.exists(publicDir)) toWatch.push(publicDir);
 
   (async () => {
     for await (const { kind } of Deno.watchFs(toWatch)) {

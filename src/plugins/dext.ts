@@ -15,6 +15,9 @@ export function dextPlugin(
   const runtimeURL = new URL("../runtime/mod.tsx", import.meta.url).toString();
   const hotRefreshURL = new URL("../runtime/hot_refresh.ts", import.meta.url)
     .toString();
+  const documentURL = pages.document
+    ? "file://" + pages.document.path
+    : new URL("../runtime/default_document.tsx", import.meta.url).toString();
   const appURL = pages.app
     ? "file://" + pages.app.path
     : new URL("../runtime/default_app.tsx", import.meta.url).toString();
@@ -69,6 +72,8 @@ start([${routes}], App);`;
       }
     },
     async generateBundle(_options, bundle) {
+      const documentTemplate = await prerenderDocument(documentURL, options);
+
       for (const name in bundle) {
         const file = bundle[name];
         if (file.type === "chunk" && file.isEntry) {
@@ -110,11 +115,11 @@ start([${routes}], App);`;
               });
             }
 
-            const source = await generatePrerenderedHTML(
+            const source = await prerenderPage(
               component,
               imports,
               { data, route: page_.route, path: `/${path}` },
-              { ...options, appURL },
+              { ...options, appURL, documentTemplate },
             );
 
             this.emitFile({
@@ -207,7 +212,39 @@ async function getStaticData(
   return JSON.parse(body);
 }
 
-async function generatePrerenderedHTML(
+async function prerenderDocument(
+  documentURL: string,
+  options: { tsconfigPath: string },
+) {
+  const prerenderHostURL = new URL(
+    "../runtime/prerender_document_host.tsx",
+    import.meta.url,
+  );
+  const proc = Deno.run({
+    cmd: [
+      "deno",
+      "run",
+      "-A",
+      "-q",
+      "-c",
+      options.tsconfigPath,
+      prerenderHostURL.toString(),
+      documentURL,
+    ],
+    stdout: "piped",
+    stderr: "inherit",
+  });
+  const out = await proc.output();
+  const { success } = await proc.status();
+  if (!success) {
+    console.log(out);
+    throw new Error("Failed to prerender document");
+  }
+  const document = new TextDecoder().decode(out);
+  return `<!DOCTYPE html>${document}`;
+}
+
+async function prerenderPage(
   component: string,
   imports: string[],
   context: {
@@ -215,12 +252,12 @@ async function generatePrerenderedHTML(
     data: unknown;
     route?: Record<string, string | string[]>;
   },
-  options: { tsconfigPath: string; appURL: string },
+  options: { tsconfigPath: string; appURL: string; documentTemplate: string },
 ) {
   const resolvedComponent = path.resolve(Deno.cwd(), component);
 
   const prerenderHostURL = new URL(
-    "../runtime/prerender_host.tsx",
+    "../runtime/prerender_page_host.tsx",
     import.meta.url,
   );
   const proc = Deno.run({
@@ -259,5 +296,6 @@ async function generatePrerenderedHTML(
     .map((name) => `<script src="/${name}" type="module"></script>`)
     .join("");
 
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />${preloads}</head><body><noscript>This page requires JavaScript to function.</noscript><div id="__dext">${body}</div>${scripts}</body></html>`;
+  return options.documentTemplate.replace("</head>", `${preloads}</head>`)
+    .replace("</body>", `<div id="__dext">${body}</div>${scripts}</body>`);
 }

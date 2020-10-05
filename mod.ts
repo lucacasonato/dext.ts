@@ -1,4 +1,9 @@
-export type { AppProps, GetStaticData, PageProps } from "./src/runtime/type.ts";
+export type {
+  AppProps,
+  DocumentProps,
+  GetStaticData,
+  PageProps,
+} from "./src/runtime/type.ts";
 export type {
   GetStaticDataContext,
   GetStaticPaths,
