@@ -16,10 +16,10 @@ export function dextPlugin(
   const hotRefreshURL = new URL("../runtime/hot_refresh.ts", import.meta.url)
     .toString();
   const documentURL = pages.document
-    ? "file://" + pages.document.path
+    ? new URL(`file:///${pages.document.path}`).toString()
     : new URL("../runtime/default_document.tsx", import.meta.url).toString();
   const appURL = pages.app
-    ? "file://" + pages.app.path
+    ? new URL(`file:///${pages.app.path}`).toString()
     : new URL("../runtime/default_app.tsx", import.meta.url).toString();
 
   return {
@@ -154,7 +154,7 @@ async function getStaticPaths(
       "-c",
       options.tsconfigPath,
       staticDataHostURL.toString(),
-      "file://" + resolvedComponent,
+      new URL(`file:///${resolvedComponent}`).toString(),
     ],
     stdout: "piped",
     stderr: "inherit",
@@ -190,7 +190,7 @@ async function getStaticData(
       "-c",
       options.tsconfigPath,
       staticDataHostURL.toString(),
-      "file://" + resolvedComponent,
+      new URL(`file:///${resolvedComponent}`).toString(),
     ],
     stdin: "piped",
     stdout: "piped",
@@ -269,7 +269,7 @@ async function prerenderPage(
       "-c",
       options.tsconfigPath,
       prerenderHostURL.toString(),
-      "file://" + resolvedComponent,
+      new URL(`file:///${resolvedComponent}`).toString(),
       options.appURL,
     ],
     stdin: "piped",
