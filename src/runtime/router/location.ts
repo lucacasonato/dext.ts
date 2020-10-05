@@ -6,6 +6,8 @@ import {
   useState,
 } from "../../../deps/preact/hooks.ts";
 
+console.log(import.meta.url);
+
 let initialLocation = "";
 export function initLocation(location: string) {
   initialLocation = location;
