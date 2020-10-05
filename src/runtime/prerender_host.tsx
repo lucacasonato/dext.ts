@@ -2,7 +2,6 @@ import { h } from "../../deps/preact/mod.ts";
 import type { ComponentType } from "../../deps/preact/mod.ts";
 import { render } from "../../deps/preact-render-to-string/mod.ts";
 import type { AppProps, PageProps } from "./type.ts";
-import { initLocation } from "./router/location.ts";
 
 const [Component, App, rawData]: [
   ComponentType<PageProps>,
@@ -16,7 +15,7 @@ const [Component, App, rawData]: [
 const { data, route, path } = rawData.length == 0
   ? undefined
   : JSON.parse(new TextDecoder().decode(rawData));
-initLocation(path);
+location = { pathname: path } as Location;
 console.log(
   render(
     <div>
