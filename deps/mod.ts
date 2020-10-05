@@ -1,4 +1,4 @@
-export { rollup } from "https://raw.githubusercontent.com/lucacasonato/denopack/lucafixed/deps.ts";
+export { rollup } from "https://raw.githubusercontent.com/lucacasonato/denopack/d6a2488136f826ebce7b1ad985097ed67e83438e/deps.ts";
 export type {
   ModuleFormat,
   OutputAsset,
@@ -11,13 +11,13 @@ export type {
   RollupCache,
   RollupOptions,
   RollupOutput,
-} from "https://raw.githubusercontent.com/lucacasonato/denopack/lucafixed/deps.ts";
+} from "https://raw.githubusercontent.com/lucacasonato/denopack/d6a2488136f826ebce7b1ad985097ed67e83438e/deps.ts";
 
-export { useCache } from "https://raw.githubusercontent.com/lucacasonato/denopack/lucafixed/plugin/mod.ts";
-export { pluginTerserTransform } from "https://raw.githubusercontent.com/lucacasonato/denopack/lucafixed/plugin/terserTransform/mod.ts";
+export { useCache } from "https://raw.githubusercontent.com/lucacasonato/denopack/d6a2488136f826ebce7b1ad985097ed67e83438e/plugin/mod.ts";
+export { pluginTerserTransform } from "https://raw.githubusercontent.com/lucacasonato/denopack/d6a2488136f826ebce7b1ad985097ed67e83438e/plugin/terserTransform/mod.ts";
 
-export { persistSourceMaps } from "https://raw.githubusercontent.com/lucacasonato/denopack/lucafixed/cli/persistSourceMaps.ts";
-export { emitFiles } from "https://raw.githubusercontent.com/lucacasonato/denopack/lucafixed/cli/emitFiles.ts";
+export { persistSourceMaps } from "https://raw.githubusercontent.com/lucacasonato/denopack/d6a2488136f826ebce7b1ad985097ed67e83438e/cli/persistSourceMaps.ts";
+export { emitFiles } from "https://raw.githubusercontent.com/lucacasonato/denopack/d6a2488136f826ebce7b1ad985097ed67e83438e/cli/emitFiles.ts";
 
 // std
 export * as colors from "https://deno.land/std@0.71.0/fmt/colors.ts";
