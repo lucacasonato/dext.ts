@@ -15,7 +15,7 @@ const [Component, App, rawData]: [
 const { data, route, path } = rawData.length == 0
   ? undefined
   : JSON.parse(new TextDecoder().decode(rawData));
-location = { pathname: path } as Location;
+window.location = { pathname: path } as Location;
 console.log(
   render(
     <div>
