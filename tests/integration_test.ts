@@ -13,6 +13,7 @@ integrationTest({
   clean: true,
   async after(ctx) {
     assert(ctx.status.success);
+    assertStringContains(ctx.stdout, "Build success.");
 
     assertEquals(
       JSON.parse(
@@ -40,11 +41,42 @@ integrationTest({
 });
 
 integrationTest({
+  name: "custom_app_and_document",
+  cmd: ["build"],
+  clean: true,
+  async after(ctx) {
+    assert(ctx.status.success);
+    assertStringContains(ctx.stdout, "Build success.");
+
+    assertEquals(
+      JSON.parse(
+        await Deno.readTextFile(join(ctx.dir, ".dext", "pagemap.json")),
+      ),
+      [{ name: "index", route: "/", hasGetStaticPaths: false }],
+    );
+
+    const staticdir = join(ctx.dir, ".dext", "static");
+
+    const indexhtml = join(staticdir, "index.html");
+    assert(await exists(indexhtml));
+    assert(await exists(`${indexhtml}.gz`));
+    assert(await exists(`${indexhtml}.br`));
+
+    const index = await Deno.readTextFile(indexhtml);
+    assertStringContains(index, `<div id="__dext">`);
+    assertStringContains(index, "<title>Hello World!</title>");
+    assertStringContains(index, "<p>My Custom App!</p>");
+    assertStringContains(index, "<h1>Hello World</h1>");
+  },
+});
+
+integrationTest({
   name: "static_generation",
   cmd: ["build"],
   clean: true,
   async after(ctx) {
     assert(ctx.status.success);
+    assertStringContains(ctx.stdout, "Build success.");
 
     assertEquals(
       JSON.parse(

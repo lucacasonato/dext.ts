@@ -3,6 +3,7 @@ import { fs, path } from "../deps/mod.ts";
 export interface Pages {
   pages: Page[];
   app: Page | undefined;
+  document: Page | undefined;
 }
 
 export interface Page {
@@ -74,9 +75,14 @@ export async function findPages(pagesDir: string): Promise<Pages> {
   if (app?.hasGetStaticData === true) {
     throw new Error("_app may not have getStaticData");
   }
+  const document = allPages.find((d) => d.name === "_document");
+  if (document?.hasGetStaticData === true) {
+    throw new Error("_document may not have getStaticData");
+  }
   return {
     pages,
     app,
+    document,
   };
 }
 
