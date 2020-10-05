@@ -1,4 +1,4 @@
-export { rollup } from "https://raw.githubusercontent.com/denofn/denopack/0203ea0b509383abc383bb3e560b86e3a928a9b1/deps.ts";
+export { rollup } from "https://deno.land/x/denopack@0.10.0/deps.ts";
 export type {
   ModuleFormat,
   OutputAsset,
@@ -11,13 +11,13 @@ export type {
   RollupCache,
   RollupOptions,
   RollupOutput,
-} from "https://raw.githubusercontent.com/denofn/denopack/0203ea0b509383abc383bb3e560b86e3a928a9b1/deps.ts";
+} from "https://deno.land/x/denopack@0.10.0/deps.ts";
 
-export { useCache } from "https://raw.githubusercontent.com/denofn/denopack/0203ea0b509383abc383bb3e560b86e3a928a9b1/plugin/mod.ts";
-export { pluginTerserTransform } from "https://raw.githubusercontent.com/denofn/denopack/0203ea0b509383abc383bb3e560b86e3a928a9b1/plugin/terserTransform/mod.ts";
+export { useCache } from "https://deno.land/x/denopack@0.10.0/plugin/mod.ts";
+export { pluginTerserTransform } from "https://deno.land/x/denopack@0.10.0/plugin/terserTransform/mod.ts";
 
-export { persistSourceMaps } from "https://raw.githubusercontent.com/denofn/denopack/0203ea0b509383abc383bb3e560b86e3a928a9b1/cli/persistSourceMaps.ts";
-export { emitFiles } from "https://raw.githubusercontent.com/denofn/denopack/0203ea0b509383abc383bb3e560b86e3a928a9b1/cli/emitFiles.ts";
+export { persistSourceMaps } from "https://deno.land/x/denopack@0.10.0/cli/persistSourceMaps.ts";
+export { emitFiles } from "https://deno.land/x/denopack@0.10.0/cli/emitFiles.ts";
 
 // std
 export * as colors from "https://deno.land/std@0.71.0/fmt/colors.ts";
