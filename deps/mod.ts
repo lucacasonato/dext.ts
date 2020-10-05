@@ -20,25 +20,25 @@ export { persistSourceMaps } from "https://deno.land/x/denopack@0.10.0/cli/persi
 export { emitFiles } from "https://deno.land/x/denopack@0.10.0/cli/emitFiles.ts";
 
 // std
-export * as colors from "https://deno.land/std@0.71.0/fmt/colors.ts";
-export * as path from "https://deno.land/std@0.71.0/path/mod.ts";
-export * as fs from "https://deno.land/std@0.71.0/fs/mod.ts";
-export { deferred, pooledMap } from "https://deno.land/std@0.71.0/async/mod.ts";
-export { format as dateFormat } from "https://deno.land/std@0.71.0/datetime/mod.ts";
+export * as colors from "https://deno.land/std@0.73.0/fmt/colors.ts";
+export * as path from "https://deno.land/std@0.73.0/path/mod.ts";
+export * as fs from "https://deno.land/std@0.73.0/fs/mod.ts";
+export { deferred, pooledMap } from "https://deno.land/std@0.73.0/async/mod.ts";
+export { format as dateFormat } from "https://deno.land/std@0.73.0/datetime/mod.ts";
 
 export {
   Command,
   CompletionsCommand,
   HelpCommand,
-} from "https://deno.land/x/cliffy@v0.14.1/command/mod.ts";
-export { Table } from "https://deno.land/x/cliffy@v0.14.1/table/mod.ts";
+} from "https://deno.land/x/cliffy@v0.14.2/command/mod.ts";
+export { Table } from "https://deno.land/x/cliffy@v0.14.2/table/mod.ts";
 
-export * as oak from "https://deno.land/x/oak@v6.2.0/mod.ts";
+export * as oak from "https://deno.land/x/oak@v6.3.0/mod.ts";
 // path_to_regexp
-export { compile } from "https://deno.land/x/oak@v6.2.0/deps.ts";
+export { compile } from "https://deno.land/x/oak@v6.3.0/deps.ts";
 // WebSocket
-export { isWebSocketCloseEvent } from "https://deno.land/std@0.69.0/ws/mod.ts";
-export type { WebSocket } from "https://deno.land/std@0.69.0/ws/mod.ts";
+export { isWebSocketCloseEvent } from "https://deno.land/std@0.71.0/ws/mod.ts";
+export type { WebSocket } from "https://deno.land/std@0.71.0/ws/mod.ts";
 
 export { gzipEncode } from "https://deno.land/x/wasm_gzip@v1.0.0/mod.ts";
 export { compress as brotliEncode } from "https://deno.land/x/brotli@v0.1.4/mod.ts";
