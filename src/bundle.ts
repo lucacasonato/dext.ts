@@ -145,7 +145,7 @@ export async function bundle(
           p.path === out.facadeModuleId!.substring("dext-page://".length)
         )!;
         const imports = [
-          flattenImports(chunks, out.fileName),
+          ...flattenImports(chunks, out.fileName),
           ...out.implicitlyLoadedBefore,
         ];
         const firstLoad = { ...fileStats[filename] };

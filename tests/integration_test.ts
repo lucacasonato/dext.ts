@@ -13,6 +13,7 @@ integrationTest({
   clean: true,
   async after(ctx) {
     assert(ctx.status.success);
+    assertStringContains(ctx.stdout, "Build success.");
 
     assertEquals(
       JSON.parse(
@@ -45,6 +46,7 @@ integrationTest({
   clean: true,
   async after(ctx) {
     assert(ctx.status.success);
+    assertStringContains(ctx.stdout, "Build success.");
 
     assertEquals(
       JSON.parse(
@@ -62,7 +64,7 @@ integrationTest({
 
     const index = await Deno.readTextFile(indexhtml);
     assertStringContains(index, `<div id="__dext">`);
-    assertStringContains(index, "<title>Hello World</title>");
+    assertStringContains(index, "<title>Hello World!</title>");
     assertStringContains(index, "<p>My Custom App!</p>");
     assertStringContains(index, "<h1>Hello World</h1>");
   },
@@ -74,6 +76,7 @@ integrationTest({
   clean: true,
   async after(ctx) {
     assert(ctx.status.success);
+    assertStringContains(ctx.stdout, "Build success.");
 
     assertEquals(
       JSON.parse(
