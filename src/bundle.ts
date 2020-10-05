@@ -119,7 +119,7 @@ export async function bundle(
         await Deno.writeFile(path + ".gz", gz);
         const br = brotliEncode(file, undefined, 11);
         await Deno.writeFile(path + ".br", br);
-        fileStats[path.slice(outDir.length)] = {
+        fileStats[path.slice(outDir.length).replace("\\", "/")] = {
           raw: file.length,
           gzip: gz.length,
           brotli: br.length,
@@ -151,7 +151,6 @@ export async function bundle(
         const firstLoad = { ...fileStats[filename] };
         for (const fileName of imports) {
           const stats = fileStats[`/${fileName}`];
-          console.log("fn", `/${fileName}`, stats);
           firstLoad.raw += stats.raw;
           firstLoad.gzip += stats.gzip;
           firstLoad.brotli += stats.brotli;
