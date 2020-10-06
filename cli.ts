@@ -15,7 +15,7 @@ import { dependencyList } from "./src/dependency_graph.ts";
 import { serve } from "./src/serve.ts";
 import { findPages } from "./src/util.ts";
 
-const VERSION = "0.7.2";
+const VERSION = "0.7.3";
 
 try {
   await new Command()
