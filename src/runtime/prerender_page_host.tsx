@@ -19,7 +19,7 @@ window.location = { pathname: path } as Location;
 const body = render(
   <div><App><Component route={route} data={data} /></App></div>,
 );
-await Deno.writeAll(
+Deno.writeAllSync(
   Deno.stdout,
   new TextEncoder().encode(`<!--dextstart-->${body}<!--dextend-->`),
 );
