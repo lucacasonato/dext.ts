@@ -254,7 +254,7 @@ async function dev(
     .map(path.fromFileUrl)
     .filter((dep) => dep.startsWith(root));
   const publicDir = path.join(root, "public");
-  if (fs.exists(publicDir)) toWatch.push(publicDir);
+  if (await fs.exists(publicDir)) toWatch.push(publicDir);
 
   (async () => {
     for await (const { kind } of Deno.watchFs(toWatch)) {
@@ -287,16 +287,20 @@ async function create(_options: unknown, maybeRoot?: string) {
   const tsconfigPath = path.join(root, "tsconfig.json");
   await Deno.writeTextFile(
     tsconfigPath,
-    JSON.stringify({
-      "compilerOptions": {
-        "lib": ["esnext", "dom", "deno.ns"],
-        "jsx": "react",
-        "jsxFactory": "h",
-        "jsxFragmentFactory": "Fragment",
-        "importsNotUsedAsValues": "error",
-        "isolatedModules": true,
+    JSON.stringify(
+      {
+        "compilerOptions": {
+          "lib": ["esnext", "dom", "deno.ns"],
+          "jsx": "react",
+          "jsxFactory": "h",
+          "jsxFragmentFactory": "Fragment",
+          "importsNotUsedAsValues": "error",
+          "isolatedModules": true,
+        },
       },
-    }),
+      undefined,
+      2,
+    ),
   );
 
   const pagesDir = path.join(root, "pages");

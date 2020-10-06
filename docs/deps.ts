@@ -1,5 +1,4 @@
 export { Fragment, h } from "https://x.lcas.dev/preact@10.5.3/mod.js";
-export type { JSX } from "https://x.lcas.dev/preact@10.5.3/mod.js";
 export type {
   AppProps,
   DocumentProps,
