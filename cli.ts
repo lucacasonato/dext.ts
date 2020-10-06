@@ -254,10 +254,10 @@ async function dev(
     .map(path.fromFileUrl)
     .filter((dep) => dep.startsWith(root));
   const publicDir = path.join(root, "public");
-  if (fs.exists(publicDir)) toWatch.push(publicDir);
+  if (await fs.exists(publicDir)) toWatch.push(publicDir);
 
   (async () => {
-    for await (const { kind } of Deno.watchFs(toWatch)) {
+    for await (const { kind } of Deno.watchFs(toWatch, { recursive: true })) {
       if (kind === "any" || kind === "access") continue;
       await run();
     }
