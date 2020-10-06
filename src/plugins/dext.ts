@@ -135,6 +135,13 @@ start([${routes}], App);`;
   };
 }
 
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
+async function noNewlineLog(str: string) {
+  await Deno.writeAll(Deno.stdout, encoder.encode(str));
+}
+
 async function getStaticPaths(
   component: string,
   options: { tsconfigPath: string },
@@ -166,7 +173,7 @@ async function getStaticPaths(
     throw new Error("Failed to get static paths");
   }
   if (out.length === 0) return undefined;
-  const body = new TextDecoder().decode(out);
+  const body = decoder.decode(out);
   return JSON.parse(body);
 }
 
@@ -205,10 +212,10 @@ async function getStaticData(
   const { success } = await proc.status();
   if (!success) {
     console.log(out);
-    throw new Error("Failed to prerender page");
+    throw new Error("Failed to get static data");
   }
   if (out.length === 0) return undefined;
-  const body = new TextDecoder().decode(out);
+  const body = decoder.decode(out);
   return JSON.parse(body);
 }
 
@@ -240,7 +247,11 @@ async function prerenderDocument(
     console.log(out);
     throw new Error("Failed to prerender document");
   }
-  const document = new TextDecoder().decode(out);
+  const stdout = decoder.decode(out);
+  const [start, documentAndEnd] = stdout.split("<!--dextstart-->", 2);
+  const [document, end] = documentAndEnd.split("<!--dextend-->", 2);
+  if (start) noNewlineLog(start);
+  if (end) noNewlineLog(end);
   return `<!DOCTYPE html>${document}`;
 }
 
@@ -287,7 +298,11 @@ async function prerenderPage(
     console.log(out);
     throw new Error("Failed to prerender page");
   }
-  const body = new TextDecoder().decode(out);
+  const stdout = decoder.decode(out);
+  const [start, bodyAndEnd] = stdout.split("<!--dextstart-->", 2);
+  const [body, end] = bodyAndEnd.split("<!--dextend-->", 2);
+  if (start) noNewlineLog(start);
+  if (end) noNewlineLog(end);
 
   const preloads = imports
     .map((name) => `<link rel="modulepreload" href="/${name}" as="script">`)

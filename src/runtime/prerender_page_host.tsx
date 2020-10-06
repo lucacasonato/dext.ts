@@ -16,12 +16,10 @@ const { data, route, path } = rawData.length == 0
   ? undefined
   : JSON.parse(new TextDecoder().decode(rawData));
 window.location = { pathname: path } as Location;
-console.log(
-  render(
-    <div>
-      <App>
-        <Component route={route} data={data} />
-      </App>
-    </div>,
-  ),
+const body = render(
+  <div><App><Component route={route} data={data} /></App></div>,
+);
+await Deno.writeAll(
+  Deno.stdout,
+  new TextEncoder().encode(`<!--dextstart-->${body}<!--dextend-->`),
 );
