@@ -302,7 +302,10 @@ async function dev(
   if (await fs.exists(publicDir)) toWatch.push(publicDir);
 
   (async () => {
-    for await (const { kind } of Deno.watchFs(toWatch, { recursive: true })) {
+    for await (
+      const { kind, paths } of Deno.watchFs(toWatch, { recursive: true })
+    ) {
+      console.log("reloading because of " + paths.join(","));
       if (kind === "any" || kind === "access") continue;
       await run();
     }
