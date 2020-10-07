@@ -46,6 +46,7 @@ export async function bundle(
     cache?: RollupCache;
     isDev: boolean;
     hotRefresh: boolean;
+    hotRefreshHost?: string;
   },
 ): Promise<{ cache: RollupCache | undefined; stats: BundleStats | undefined }> {
   const outputOptions: OutputOptions = {
@@ -62,7 +63,11 @@ export async function bundle(
     plugins: [
       dextPlugin(
         pages,
-        { tsconfigPath: options.tsconfigPath, hotRefresh: options.hotRefresh },
+        {
+          tsconfigPath: options.tsconfigPath,
+          hotRefresh: options.hotRefresh,
+          hotRefreshHost: options.hotRefreshHost,
+        },
       ),
       ...useCache(tsconfig),
       ...(options.isDev ? [] : [pluginTerserTransform({

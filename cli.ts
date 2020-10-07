@@ -49,6 +49,11 @@ try {
       "If hot refresh should be disabled.",
       { default: true },
     )
+    .option(
+      "--hot-refresh-host <host:string>",
+      "The hostname to use for the hot refresh websocket endpoint. Useful for proxies.",
+      { default: true, depends: ["hot-refresh"] },
+    )
     .description("Start your application in development mode.")
     .action(dev)
     .command("create [root]")
@@ -178,7 +183,7 @@ async function start(
 }
 
 async function dev(
-  options: { address: string; hotRefresh: boolean },
+  options: { address: string; hotRefresh: boolean; hotRefreshHost: string },
   maybeRoot?: string,
 ) {
   const root = path.resolve(Deno.cwd(), maybeRoot ?? "");
@@ -225,6 +230,7 @@ async function dev(
           cache,
           isDev: true,
           hotRefresh: options.hotRefresh,
+          hotRefreshHost: options.hotRefreshHost,
         },
       ));
       cache = out.cache!;
