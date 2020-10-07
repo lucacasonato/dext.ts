@@ -27,6 +27,11 @@ try {
       console.log(this.getHelp());
     })
     .command("build [root]")
+    .option(
+      "--typecheck [enabled:boolean]",
+      "If TypeScript code should be typechecked.",
+      { default: true },
+    )
     .description("Build your application.")
     .action(build)
     .command("start [root]")
@@ -54,6 +59,11 @@ try {
       "The hostname to use for the hot refresh websocket endpoint. Useful for proxies.",
       { default: true, depends: ["hot-refresh"] },
     )
+    .option(
+      "--typecheck [enabled:boolean]",
+      "If TypeScript code should be typechecked.",
+      { default: false },
+    )
     .description("Start your application in development mode.")
     .action(dev)
     .command("create [root]")
@@ -65,7 +75,7 @@ try {
   console.log(colors.red(colors.bold("error: ")) + err.message);
 }
 
-async function build(_options: unknown, root?: string) {
+async function build(options: { typecheck: boolean }, root?: string) {
   root = path.resolve(Deno.cwd(), root ?? "");
 
   const tsconfigPath = path.join(root, "tsconfig.json");
@@ -98,7 +108,14 @@ async function build(_options: unknown, root?: string) {
   const outDir = path.join(dextDir, "static");
   const { stats } = await bundle(
     pages,
-    { rootDir: root, outDir, tsconfigPath, isDev: false, hotRefresh: false },
+    {
+      rootDir: root,
+      outDir,
+      tsconfigPath,
+      minify: true,
+      hotRefresh: false,
+      typecheck: options.typecheck,
+    },
   );
   console.log(colors.green(colors.bold("Build success.\n")));
 
@@ -183,7 +200,12 @@ async function start(
 }
 
 async function dev(
-  options: { address: string; hotRefresh: boolean; hotRefreshHost: string },
+  options: {
+    address: string;
+    hotRefresh: boolean;
+    hotRefreshHost: string;
+    typecheck: boolean;
+  },
   maybeRoot?: string,
 ) {
   const root = path.resolve(Deno.cwd(), maybeRoot ?? "");
@@ -228,9 +250,10 @@ async function dev(
           outDir,
           tsconfigPath,
           cache,
-          isDev: true,
+          minify: false,
           hotRefresh: options.hotRefresh,
           hotRefreshHost: options.hotRefreshHost,
+          typecheck: options.typecheck,
         },
       ));
       cache = out.cache!;

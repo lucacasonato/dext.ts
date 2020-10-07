@@ -44,7 +44,8 @@ export async function bundle(
     outDir: string;
     tsconfigPath: string;
     cache?: RollupCache;
-    isDev: boolean;
+    typecheck: boolean;
+    minify: boolean;
     hotRefresh: boolean;
     hotRefreshHost?: string;
   },
@@ -67,14 +68,17 @@ export async function bundle(
           tsconfigPath: options.tsconfigPath,
           hotRefresh: options.hotRefresh,
           hotRefreshHost: options.hotRefreshHost,
+          typecheck: options.typecheck,
         },
       ),
       ...useCache(tsconfig),
-      ...(options.isDev ? [] : [pluginTerserTransform({
-        module: true,
-        compress: true,
-        mangle: true,
-      })]),
+      ...(options.minify
+        ? [pluginTerserTransform({
+          module: true,
+          compress: true,
+          mangle: true,
+        })]
+        : []),
     ],
     output: outputOptions,
     preserveEntrySignatures: false,
@@ -103,7 +107,7 @@ export async function bundle(
   let stats: BundleStats | undefined = undefined;
 
   // In production emit .br and .gz files
-  if (!options.isDev) {
+  if (options.minify) {
     const fileStats: Record<string, FileSize> = {};
 
     const outGlob = path.join(outDir, "/**/*");

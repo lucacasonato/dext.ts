@@ -8,6 +8,7 @@ export function dextPlugin(
     tsconfigPath: string;
     hotRefresh: boolean;
     hotRefreshHost?: string;
+    typecheck: boolean;
   },
 ): Plugin {
   const pageMap: Record<string, Page> = {};
@@ -156,7 +157,7 @@ async function noNewlineLog(str: string) {
 
 async function getStaticPaths(
   component: string,
-  options: { tsconfigPath: string },
+  options: { tsconfigPath: string; typecheck: boolean },
 ): Promise<GetStaticPaths | undefined> {
   const resolvedComponent = path.resolve(Deno.cwd(), component);
 
@@ -172,6 +173,7 @@ async function getStaticPaths(
       "-q",
       "-c",
       options.tsconfigPath,
+      ...(options.typecheck ? [] : ["--no-check"]),
       staticDataHostURL.toString(),
       new URL(`file:///${resolvedComponent}`).toString(),
     ],
@@ -192,7 +194,7 @@ async function getStaticPaths(
 async function getStaticData(
   component: string,
   context: GetStaticDataContext,
-  options: { tsconfigPath: string },
+  options: { tsconfigPath: string; typecheck: boolean },
 ) {
   const resolvedComponent = path.resolve(Deno.cwd(), component);
 
@@ -208,6 +210,7 @@ async function getStaticData(
       "-q",
       "-c",
       options.tsconfigPath,
+      ...(options.typecheck ? [] : ["--no-check"]),
       staticDataHostURL.toString(),
       new URL(`file:///${resolvedComponent}`).toString(),
     ],
@@ -233,7 +236,7 @@ async function getStaticData(
 
 async function prerenderDocument(
   documentURL: string,
-  options: { tsconfigPath: string },
+  options: { tsconfigPath: string; typecheck: boolean },
 ) {
   const prerenderHostURL = new URL(
     "../runtime/prerender_document_host.tsx",
@@ -247,6 +250,7 @@ async function prerenderDocument(
       "-q",
       "-c",
       options.tsconfigPath,
+      ...(options.typecheck ? [] : ["--no-check"]),
       prerenderHostURL.toString(),
       documentURL,
     ],
@@ -275,10 +279,14 @@ async function prerenderPage(
     data: unknown;
     route?: Record<string, string | string[]>;
   },
-  options: { tsconfigPath: string; appURL: string; documentTemplate: string },
+  options: {
+    tsconfigPath: string;
+    appURL: string;
+    documentTemplate: string;
+    typecheck: boolean;
+  },
 ) {
   const resolvedComponent = path.resolve(Deno.cwd(), component);
-
   const prerenderHostURL = new URL(
     "../runtime/prerender_page_host.tsx",
     import.meta.url,
@@ -291,6 +299,7 @@ async function prerenderPage(
       "-q",
       "-c",
       options.tsconfigPath,
+      ...(options.typecheck ? [] : ["--no-check"]),
       prerenderHostURL.toString(),
       new URL(`file:///${resolvedComponent}`).toString(),
       options.appURL,
