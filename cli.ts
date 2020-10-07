@@ -32,6 +32,11 @@ try {
       "If TypeScript code should be typechecked.",
       { default: true },
     )
+    .option(
+      "--prerender [enabled:boolean]",
+      "If static pages should be server side prerendered.",
+      { default: true },
+    )
     .description("Build your application.")
     .action(build)
     .command("start [root]")
@@ -57,11 +62,16 @@ try {
     .option(
       "--hot-refresh-host <host:string>",
       "The hostname to use for the hot refresh websocket endpoint. Useful for proxies.",
-      { default: true, depends: ["hot-refresh"] },
+      { depends: ["hot-refresh"] },
     )
     .option(
       "--typecheck [enabled:boolean]",
       "If TypeScript code should be typechecked.",
+      { default: false },
+    )
+    .option(
+      "--prerender [enabled:boolean]",
+      "If static pages should be server side prerendered.",
       { default: false },
     )
     .description("Start your application in development mode.")
@@ -75,7 +85,10 @@ try {
   console.log(colors.red(colors.bold("error: ")) + err.message);
 }
 
-async function build(options: { typecheck: boolean }, root?: string) {
+async function build(
+  options: { typecheck: boolean; prerender: boolean },
+  root?: string,
+) {
   root = path.resolve(Deno.cwd(), root ?? "");
 
   const tsconfigPath = path.join(root, "tsconfig.json");
@@ -115,6 +128,7 @@ async function build(options: { typecheck: boolean }, root?: string) {
       minify: true,
       hotRefresh: false,
       typecheck: options.typecheck,
+      prerender: options.prerender,
     },
   );
   console.log(colors.green(colors.bold("Build success.\n")));
@@ -205,6 +219,7 @@ async function dev(
     hotRefresh: boolean;
     hotRefreshHost: string;
     typecheck: boolean;
+    prerender: boolean;
   },
   maybeRoot?: string,
 ) {
@@ -254,6 +269,7 @@ async function dev(
           hotRefresh: options.hotRefresh,
           hotRefreshHost: options.hotRefreshHost,
           typecheck: options.typecheck,
+          prerender: options.prerender,
         },
       ));
       cache = out.cache!;

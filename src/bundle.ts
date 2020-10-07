@@ -46,6 +46,7 @@ export async function bundle(
     cache?: RollupCache;
     typecheck: boolean;
     minify: boolean;
+    prerender: boolean;
     hotRefresh: boolean;
     hotRefreshHost?: string;
   },
@@ -69,6 +70,7 @@ export async function bundle(
           hotRefresh: options.hotRefresh,
           hotRefreshHost: options.hotRefreshHost,
           typecheck: options.typecheck,
+          prerender: options.prerender,
         },
       ),
       ...useCache(tsconfig),
