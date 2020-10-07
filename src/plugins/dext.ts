@@ -4,7 +4,11 @@ import type { Page, Pages } from "../util.ts";
 
 export function dextPlugin(
   pages: Pages,
-  options: { tsconfigPath: string; hotRefresh: boolean },
+  options: {
+    tsconfigPath: string;
+    hotRefresh: boolean;
+    hotRefreshHost?: string;
+  },
 ): Plugin {
   const pageMap: Record<string, Page> = {};
 
@@ -65,7 +69,15 @@ export function dextPlugin(
           .join(",");
         const bundle = `import { start } from "${runtimeURL}";
 import App from "${appURL}";
-${options.hotRefresh ? `import "${hotRefreshURL}";` : ``}
+${
+          options.hotRefresh
+            ? `import hotRefresh from "${hotRefreshURL}"; hotRefresh(${
+              options.hotRefreshHost
+                ? JSON.stringify(options.hotRefreshHost)
+                : ""
+            });`
+            : ``
+        }
 
 start([${routes}], App);`;
         return bundle;
