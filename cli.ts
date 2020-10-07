@@ -83,6 +83,7 @@ try {
     .parse(Deno.args);
 } catch (err) {
   console.log(colors.red(colors.bold("error: ")) + err.message);
+  Deno.exit(1);
 }
 
 async function build(

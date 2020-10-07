@@ -189,7 +189,6 @@ async function getStaticPaths(
   const out = await proc.output();
   const { success } = await proc.status();
   if (!success) {
-    console.log(out);
     throw new Error("Failed to get static paths");
   }
   if (out.length === 0) return undefined;
@@ -232,7 +231,6 @@ async function getStaticData(
   const out = await proc.output();
   const { success } = await proc.status();
   if (!success) {
-    console.log(out);
     throw new Error("Failed to get static data");
   }
   if (out.length === 0) return undefined;
@@ -266,7 +264,6 @@ async function prerenderDocument(
   const out = await proc.output();
   const { success } = await proc.status();
   if (!success) {
-    console.log(out);
     throw new Error("Failed to prerender document");
   }
   const stdout = decoder.decode(out);
@@ -320,7 +317,6 @@ async function prerenderPage(
   const out = await proc.output();
   const { success } = await proc.status();
   if (!success) {
-    console.log(out);
     throw new Error("Failed to prerender page");
   }
   const stdout = decoder.decode(out);
