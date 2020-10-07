@@ -9,6 +9,7 @@ export function dextPlugin(
     hotRefresh: boolean;
     hotRefreshHost?: string;
     typecheck: boolean;
+    prerender: boolean;
   },
 ): Plugin {
   const pageMap: Record<string, Page> = {};
@@ -112,11 +113,13 @@ start([${routes}], App);`;
               ? createPath(page_.route).slice(1)
               : page.name;
 
-            const staticData = await getStaticData(
-              component,
-              { route: page_.route },
-              options,
-            );
+            const staticData = page.hasGetStaticData
+              ? await getStaticData(
+                component,
+                { route: page_.route },
+                options,
+              )
+              : undefined;
             const data = staticData?.data;
 
             if (staticData !== undefined) {
@@ -128,12 +131,15 @@ start([${routes}], App);`;
               });
             }
 
-            const source = await prerenderPage(
-              component,
-              imports,
-              { data, route: page_.route, path: `/${path}` },
-              { ...options, appURL, documentTemplate },
-            );
+            const body = options.prerender
+              ? await prerenderPage(
+                component,
+                { data, route: page_.route, path: `/${path}` },
+                { ...options, appURL },
+              )
+              : "";
+
+            const source = buildHTMLPage({ imports, body, documentTemplate });
 
             this.emitFile({
               type: "asset",
@@ -273,7 +279,6 @@ async function prerenderDocument(
 
 async function prerenderPage(
   component: string,
-  imports: string[],
   context: {
     path: string;
     data: unknown;
@@ -282,7 +287,6 @@ async function prerenderPage(
   options: {
     tsconfigPath: string;
     appURL: string;
-    documentTemplate: string;
     typecheck: boolean;
   },
 ) {
@@ -324,7 +328,16 @@ async function prerenderPage(
   const [body, end] = bodyAndEnd.split("<!--dextend-->", 2);
   if (start) noNewlineLog(start);
   if (end) noNewlineLog(end);
+  return body;
+}
 
+function buildHTMLPage(
+  { imports, body, documentTemplate }: {
+    imports: string[];
+    body: string;
+    documentTemplate: string;
+  },
+) {
   const preloads = imports
     .map((name) => `<link rel="modulepreload" href="/${name}" as="script">`)
     .join("");
@@ -332,6 +345,6 @@ async function prerenderPage(
     .map((name) => `<script src="/${name}" type="module"></script>`)
     .join("");
 
-  return options.documentTemplate.replace("</head>", `${preloads}</head>`)
+  return documentTemplate.replace("</head>", `${preloads}</head>`)
     .replace("</body>", `<div id="__dext">${body}</div>${scripts}</body>`);
 }
