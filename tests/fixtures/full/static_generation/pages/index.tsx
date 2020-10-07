@@ -10,9 +10,7 @@ interface Props {
 }
 
 function IndexPage(props: PageProps<Props>) {
-  return (
-    <h1>Hello {props.data.hello}</h1>
-  );
+  return <h1>Hello {props.data.hello}</h1>;
 }
 
 export function getStaticData(ctx: GetStaticDataContext): GetStaticData<Props> {

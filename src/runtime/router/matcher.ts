@@ -1,12 +1,15 @@
 export function makeMatcher() {
-  let cache: Record<string, {
-    keys: { name: string; repeat: boolean }[];
-    regexp: RegExp;
-  }> = {};
+  let cache: Record<
+    string,
+    {
+      keys: { name: string; repeat: boolean }[];
+      regexp: RegExp;
+    }
+  > = {};
 
   // obtains a cached regexp version of the pattern
   const getRegexp = (pattern: string) =>
-    (cache[pattern]) || (cache[pattern] = pathToRegexp(pattern));
+    cache[pattern] || (cache[pattern] = pathToRegexp(pattern));
 
   return (
     pattern: string,
@@ -21,7 +24,7 @@ export function makeMatcher() {
     const params = keys.reduce<Record<string, string | string[]>>(
       (params, key, i) => {
         params[key.name] = key.repeat
-          ? (out[i + 1] ? out[i + 1].split("/") : [])
+          ? out[i + 1] ? out[i + 1].split("/") : []
           : out[i + 1];
         return params;
       },

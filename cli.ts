@@ -40,20 +40,16 @@ try {
     .description("Build your application.")
     .action(build)
     .command("start [root]")
-    .option(
-      "-a --address <address>",
-      "The address to listen on.",
-      { default: ":3000" },
-    )
+    .option("-a --address <address>", "The address to listen on.", {
+      default: ":3000",
+    })
     .option("--quiet", "If access logs should be printed.")
     .description("Start a built application.")
     .action(start)
     .command("dev [root]")
-    .option(
-      "-a --address <address>",
-      "The address to listen on.",
-      { default: ":3000" },
-    )
+    .option("-a --address <address>", "The address to listen on.", {
+      default: ":3000",
+    })
     .option(
       "--hot-refresh [enabled:boolean]",
       "If hot refresh should be disabled.",
@@ -92,11 +88,10 @@ async function build(
   root = path.resolve(Deno.cwd(), root ?? "");
 
   const tsconfigPath = path.join(root, "tsconfig.json");
-  if (!await fs.exists(tsconfigPath)) {
-    console.log(colors.red(
-      colors.bold("Error: ") +
-        "Missing tsconfig.json file.",
-    ));
+  if (!(await fs.exists(tsconfigPath))) {
+    console.log(
+      colors.red(colors.bold("Error: ") + "Missing tsconfig.json file."),
+    );
     Deno.exit(1);
   }
 
@@ -110,27 +105,26 @@ async function build(
   const pagemapPath = path.join(dextDir, "pagemap.json");
   await Deno.writeTextFile(
     pagemapPath,
-    JSON.stringify(pages.pages.map((page) => ({
-      name: page.name,
-      route: page.route,
-      hasGetStaticPaths: page.hasGetStaticPaths,
-    }))),
+    JSON.stringify(
+      pages.pages.map((page) => ({
+        name: page.name,
+        route: page.route,
+        hasGetStaticPaths: page.hasGetStaticPaths,
+      })),
+    ),
   );
 
   // Do bundling
   const outDir = path.join(dextDir, "static");
-  const { stats } = await bundle(
-    pages,
-    {
-      rootDir: root,
-      outDir,
-      tsconfigPath,
-      minify: true,
-      hotRefresh: false,
-      typecheck: options.typecheck,
-      prerender: options.prerender,
-    },
-  );
+  const { stats } = await bundle(pages, {
+    rootDir: root,
+    outDir,
+    tsconfigPath,
+    minify: true,
+    hotRefresh: false,
+    typecheck: options.typecheck,
+    prerender: options.prerender,
+  });
   console.log(colors.green(colors.bold("Build success.\n")));
 
   if (stats) {
@@ -142,40 +136,40 @@ async function build(
         colors.bold("Size"),
         colors.bold("First Load JS"),
       ])
-      .body(
-        [
-          ...stats.routes.map((route, i) => {
-            const prefix = stats.routes.length === 1
-              ? "-"
-              : i === 0
-              ? "┌"
-              : i === stats.routes.length - 1
-              ? "└"
-              : "├";
+      .body([
+        ...stats.routes.map((route, i) => {
+          const prefix = stats.routes.length === 1
+            ? "-"
+            : i === 0
+            ? "┌"
+            : i === stats.routes.length - 1
+            ? "└"
+            : "├";
 
-            return [
-              `${prefix} ${route.hasGetStaticData ? "●" : "○"} ${route.route}`,
-              prettyBytes(route.size.brotli),
-              prettyBytes(route.firstLoad.brotli),
-            ];
-          }),
-          [],
-          [
-            "+ First Load JS shared by all",
-            prettyBytes(stats.framework.brotli),
-            "",
-          ],
-          ...sharedKeys.map((name, i) => {
-            const size = stats.shared[name];
-            const isLast = i === (sharedKeys.length - 1);
-            return [
-              `  ${isLast ? "└" : "├"} ${name}`,
-              prettyBytes(size.brotli),
-              "",
-            ];
-          }),
+          return [
+            `${prefix} ${route.hasGetStaticData ? "●" : "○"} ${route.route}`,
+            prettyBytes(route.size.brotli),
+            prettyBytes(route.firstLoad.brotli),
+          ];
+        }),
+        [],
+        [
+          "+ First Load JS shared by all",
+          prettyBytes(stats.framework.brotli),
+          "",
         ],
-      ).padding(2).render();
+        ...sharedKeys.map((name, i) => {
+          const size = stats.shared[name];
+          const isLast = i === sharedKeys.length - 1;
+          return [
+            `  ${isLast ? "└" : "├"} ${name}`,
+            prettyBytes(size.brotli),
+            "",
+          ];
+        }),
+      ])
+      .padding(2)
+      .render();
     console.log();
     console.log("○  (Static)  automatically rendered as static HTML");
     console.log(
@@ -196,21 +190,24 @@ async function start(
 
   const dextDir = path.join(root, ".dext");
   const pagemapPath = path.join(dextDir, "pagemap.json");
-  if (!await fs.exists(pagemapPath)) {
-    console.log(colors.red(
-      colors.bold("Error: ") +
-        "Page map does not exist. Did you build the project?",
-    ));
+  if (!(await fs.exists(pagemapPath))) {
+    console.log(
+      colors.red(
+        colors.bold("Error: ") +
+          "Page map does not exist. Did you build the project?",
+      ),
+    );
     Deno.exit(1);
   }
   const pagemap = JSON.parse(await Deno.readTextFile(pagemapPath));
 
   const staticDir = path.join(dextDir, "static");
 
-  await serve(
-    pagemap,
-    { staticDir, address: options.address, quiet: options.quiet },
-  );
+  await serve(pagemap, {
+    staticDir,
+    address: options.address,
+    quiet: options.quiet,
+  });
 }
 
 async function dev(
@@ -226,11 +223,10 @@ async function dev(
   const root = path.resolve(Deno.cwd(), maybeRoot ?? "");
 
   const tsconfigPath = path.join(root, "tsconfig.json");
-  if (!await fs.exists(tsconfigPath)) {
-    console.log(colors.red(
-      colors.bold("Error: ") +
-        "Missing tsconfig.json file.",
-    ));
+  if (!(await fs.exists(tsconfigPath))) {
+    console.log(
+      colors.red(colors.bold("Error: ") + "Missing tsconfig.json file."),
+    );
     Deno.exit(1);
   }
 
@@ -258,27 +254,26 @@ async function dev(
     console.log(colors.cyan(colors.bold("Started build...")));
 
     try {
-      const out = (await bundle(
-        pages,
-        {
-          rootDir: root,
-          outDir,
-          tsconfigPath,
-          cache,
-          minify: false,
-          hotRefresh: options.hotRefresh,
-          hotRefreshHost: options.hotRefreshHost,
-          typecheck: options.typecheck,
-          prerender: options.prerender,
-        },
-      ));
+      const out = await bundle(pages, {
+        rootDir: root,
+        outDir,
+        tsconfigPath,
+        cache,
+        minify: false,
+        hotRefresh: options.hotRefresh,
+        hotRefreshHost: options.hotRefreshHost,
+        typecheck: options.typecheck,
+        prerender: options.prerender,
+      });
       cache = out.cache!;
       doHotRefresh.resolve();
       console.log(
         colors.green(
           colors.bold(
             `Build success done ${
-              (new Date().getTime() - start.getTime()).toFixed(0)
+              (
+                new Date().getTime() - start.getTime()
+              ).toFixed(0)
             }ms`,
           ),
         ),
@@ -308,15 +303,12 @@ async function dev(
     }
   })();
 
-  const server = serve(
-    pages.pages,
-    {
-      staticDir: outDir,
-      address: options.address,
-      quiet: true,
-      hotRefresh,
-    },
-  );
+  const server = serve(pages.pages, {
+    staticDir: outDir,
+    address: options.address,
+    quiet: true,
+    hotRefresh,
+  });
 
   await run();
   await server;
@@ -333,13 +325,13 @@ async function create(_options: unknown, maybeRoot?: string) {
   await Deno.writeTextFile(
     tsconfigPath,
     JSON.stringify({
-      "compilerOptions": {
-        "lib": ["esnext", "dom", "deno.ns"],
-        "jsx": "react",
-        "jsxFactory": "h",
-        "jsxFragmentFactory": "Fragment",
-        "importsNotUsedAsValues": "error",
-        "isolatedModules": true,
+      compilerOptions: {
+        lib: ["esnext", "dom", "deno.ns"],
+        jsx: "react",
+        jsxFactory: "h",
+        jsxFragmentFactory: "Fragment",
+        importsNotUsedAsValues: "error",
+        isolatedModules: true,
       },
     }),
   );

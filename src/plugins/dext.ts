@@ -19,8 +19,10 @@ export function dextPlugin(
   }
 
   const runtimeURL = new URL("../runtime/mod.tsx", import.meta.url).toString();
-  const hotRefreshURL = new URL("../runtime/hot_refresh.ts", import.meta.url)
-    .toString();
+  const hotRefreshURL = new URL(
+    "../runtime/hot_refresh.ts",
+    import.meta.url,
+  ).toString();
   const documentURL = pages.document
     ? new URL(`file:///${pages.document.path}`).toString()
     : new URL("../runtime/default_document.tsx", import.meta.url).toString();
@@ -114,11 +116,7 @@ start([${routes}], App);`;
               : page.name;
 
             const staticData = page.hasGetStaticData
-              ? await getStaticData(
-                component,
-                { route: page_.route },
-                options,
-              )
+              ? await getStaticData(component, { route: page_.route }, options)
               : undefined;
             const data = staticData?.data;
 
@@ -331,13 +329,15 @@ async function prerenderPage(
   return body;
 }
 
-function buildHTMLPage(
-  { imports, body, documentTemplate }: {
-    imports: string[];
-    body: string;
-    documentTemplate: string;
-  },
-) {
+function buildHTMLPage({
+  imports,
+  body,
+  documentTemplate,
+}: {
+  imports: string[];
+  body: string;
+  documentTemplate: string;
+}) {
   const preloads = imports
     .map((name) => `<link rel="modulepreload" href="/${name}" as="script">`)
     .join("");
@@ -345,6 +345,7 @@ function buildHTMLPage(
     .map((name) => `<script src="/${name}" type="module"></script>`)
     .join("");
 
-  return documentTemplate.replace("</head>", `${preloads}</head>`)
+  return documentTemplate
+    .replace("</head>", `${preloads}</head>`)
     .replace("</body>", `<div id="__dext">${body}</div>${scripts}</body>`);
 }

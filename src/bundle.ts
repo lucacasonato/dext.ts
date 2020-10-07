@@ -63,23 +63,22 @@ export async function bundle(
   const rollupOptions: RollupOptions = {
     input: [],
     plugins: [
-      dextPlugin(
-        pages,
-        {
-          tsconfigPath: options.tsconfigPath,
-          hotRefresh: options.hotRefresh,
-          hotRefreshHost: options.hotRefreshHost,
-          typecheck: options.typecheck,
-          prerender: options.prerender,
-        },
-      ),
+      dextPlugin(pages, {
+        tsconfigPath: options.tsconfigPath,
+        hotRefresh: options.hotRefresh,
+        hotRefreshHost: options.hotRefreshHost,
+        typecheck: options.typecheck,
+        prerender: options.prerender,
+      }),
       ...useCache(tsconfig),
       ...(options.minify
-        ? [pluginTerserTransform({
-          module: true,
-          compress: true,
-          mangle: true,
-        })]
+        ? [
+          pluginTerserTransform({
+            module: true,
+            compress: true,
+            mangle: true,
+          }),
+        ]
         : []),
     ],
     output: outputOptions,
@@ -95,7 +94,7 @@ export async function bundle(
     if (!(err instanceof Deno.errors.NotFound)) throw err;
   }
 
-  const build = await rollup(rollupOptions) as RollupBuild;
+  const build = (await rollup(rollupOptions)) as RollupBuild;
   const generated = await persistSourceMaps(build.generate, outputOptions);
 
   const publicDir = path.join(options.rootDir, "public");
@@ -115,14 +114,11 @@ export async function bundle(
     const outGlob = path.join(outDir, "/**/*");
     const res = pooledMap(
       50,
-      fs.expandGlob(
-        outGlob,
-        {
-          exclude: [outGlob + ".br", outGlob + ".gz"],
-          globstar: true,
-          includeDirs: false,
-        },
-      ),
+      fs.expandGlob(outGlob, {
+        exclude: [outGlob + ".br", outGlob + ".gz"],
+        globstar: true,
+        includeDirs: false,
+      }),
       async (entry) => {
         const path = entry.path;
         const file = await Deno.readFile(path);
@@ -145,15 +141,16 @@ export async function bundle(
     const routes: BundleStatsRoute[] = [];
     const shared: Record<string, FileSize> = {};
 
-    const chunks = generated.output.filter((d) =>
-      d.type === "chunk"
+    const chunks = generated.output.filter(
+      (d) => d.type === "chunk",
     ) as OutputChunk[];
 
     for (const out of chunks) {
       const filename = `/${out.fileName}`;
       if (out.facadeModuleId && out.facadeModuleId.startsWith("dext-page://")) {
-        const page = pages.pages.find((p) =>
-          p.path === out.facadeModuleId!.substring("dext-page://".length)
+        const page = pages.pages.find(
+          (p) =>
+            p.path === out.facadeModuleId!.substring("dext-page://".length),
         )!;
         const imports = [
           ...flattenImports(chunks, out.fileName),
@@ -193,7 +190,7 @@ export async function bundle(
 
     stats = {
       routes: routes.sort((a, b) =>
-        (a.route > b.route) ? 1 : ((b.route > a.route) ? -1 : 0)
+        a.route > b.route ? 1 : b.route > a.route ? -1 : 0
       ),
       shared,
       framework,
@@ -208,15 +205,15 @@ function flattenImports(
   fileName: string,
   visited: string[] = [],
 ): string[] {
-  const chunk = chunks.find((chunk) => chunk.fileName = fileName);
+  const chunk = chunks.find((chunk) => (chunk.fileName = fileName));
   if (!chunk) throw new Error("Failed to find chunk " + fileName);
   return [
-    ...new Set(chunk.imports.flatMap(
-      (fileName) => {
+    ...new Set(
+      chunk.imports.flatMap((fileName) => {
         if (visited.includes(fileName)) return [];
         visited.push(fileName);
         return [fileName, ...flattenImports(chunks, fileName, visited)];
-      },
-    )),
+      }),
+    ),
   ];
 }
