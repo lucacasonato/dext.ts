@@ -6,10 +6,7 @@ import { Router } from "./router/router.ts";
 import { useLocation } from "./router/location.ts";
 import { initRouter } from "./router/interceptor.ts";
 
-type Route = [
-  route: string,
-  data: RouteData,
-];
+type Route = [route: string, data: RouteData];
 
 type RouteData = [
   component: () => Promise<{ default: ComponentType<PageProps> }>,
@@ -43,10 +40,10 @@ function Dext(props: {
   initialPage: PageComponent;
 }) {
   const [path] = useLocation();
-  const [route, match] = useMemo(
-    () => props.router.getRoute(path),
-    [props.router, path],
-  );
+  const [route, match] = useMemo(() => props.router.getRoute(path), [
+    props.router,
+    path,
+  ]);
 
   const [[Page], setPage] = useState<[PageComponent | null]>([
     props.initialPage,
@@ -61,15 +58,15 @@ function Dext(props: {
     } else {
       setPage([null]);
     }
-    () => cancelled = true;
+    () => (cancelled = true);
   }, [route]);
 
   const App = props.app;
-  return <div>
-    <App>
-      {Page === null ? <Error404 /> : <Page route={match!} />}
-    </App>
-  </div>;
+  return (
+    <div>
+      <App>{Page === null ? <Error404 /> : <Page route={match!} />}</App>
+    </div>
+  );
 }
 
 async function loadComponent(

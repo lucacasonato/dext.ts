@@ -20,30 +20,24 @@ Deno.test({
     assertEquals(router.getRoute("/hellow"), [["/hellow", 0], {}]);
     assertEquals(router.getRoute("/abc"), [null, {}]);
     assertEquals(router.getRoute("/abc/"), [null, {}]);
-    assertEquals(
-      router.getRoute("/abc/bar"),
-      [["/abc/:foo", 0], { foo: "bar" }],
-    );
-    assertEquals(
-      router.getRoute("/abc/bar/"),
-      [["/abc/:foo", 0], { foo: "bar" }],
-    );
+    assertEquals(router.getRoute("/abc/bar"), [
+      ["/abc/:foo", 0],
+      { foo: "bar" },
+    ]);
+    assertEquals(router.getRoute("/abc/bar/"), [
+      ["/abc/:foo", 0],
+      { foo: "bar" },
+    ]);
     assertEquals(router.getRoute("/abc/bar/baz"), [null, {}]);
-    assertEquals(
-      router.getRoute("/xyz"),
-      [["/xyz/:rest*", 0], { rest: [] }],
-    );
-    assertEquals(
-      router.getRoute("/xyz/"),
-      [["/xyz/:rest*", 0], { rest: [] }],
-    );
-    assertEquals(
-      router.getRoute("/xyz/foo"),
-      [["/xyz/:rest*", 0], { rest: ["foo"] }],
-    );
-    assertEquals(
-      router.getRoute("/xyz/foo/bar"),
-      [["/xyz/:rest*", 0], { rest: ["foo", "bar"] }],
-    );
+    assertEquals(router.getRoute("/xyz"), [["/xyz/:rest*", 0], { rest: [] }]);
+    assertEquals(router.getRoute("/xyz/"), [["/xyz/:rest*", 0], { rest: [] }]);
+    assertEquals(router.getRoute("/xyz/foo"), [
+      ["/xyz/:rest*", 0],
+      { rest: ["foo"] },
+    ]);
+    assertEquals(router.getRoute("/xyz/foo/bar"), [
+      ["/xyz/:rest*", 0],
+      { rest: ["foo", "bar"] },
+    ]);
   },
 });

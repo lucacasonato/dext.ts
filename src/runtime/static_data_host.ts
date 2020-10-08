@@ -2,10 +2,7 @@ const [{ getStaticData }, rawData]: [
   // deno-lint-ignore ban-types
   { getStaticData: Function },
   Uint8Array,
-] = await Promise.all([
-  import(Deno.args[0]),
-  Deno.readAll(Deno.stdin),
-]);
+] = await Promise.all([import(Deno.args[0]), Deno.readAll(Deno.stdin)]);
 const data = rawData.length == 0
   ? undefined
   : JSON.parse(new TextDecoder().decode(rawData));

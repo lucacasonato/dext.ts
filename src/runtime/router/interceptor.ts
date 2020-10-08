@@ -11,7 +11,9 @@ export function initRouter(router: Router<unknown>) {
 
     // ignore links with targets and non-path URLs
     if (
-      !href || !href.match(/^\//g) || (target && !target.match(/^_?self$/i))
+      !href ||
+      !href.match(/^\//g) ||
+      (target && !target.match(/^_?self$/i))
     ) {
       return;
     }
@@ -28,13 +30,7 @@ export function initRouter(router: Router<unknown>) {
   addEventListener("click", (e: MouseEvent) => {
     // ignores the navigation when clicked using right mouse button or
     // by holding a special modifier key: ctrl, command, win, alt, shift
-    if (
-      e.ctrlKey ||
-      e.metaKey ||
-      e.altKey ||
-      e.shiftKey ||
-      e.button !== 0
-    ) {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey || e.button !== 0) {
       return;
     }
 

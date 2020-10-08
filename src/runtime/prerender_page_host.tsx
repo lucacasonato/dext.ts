@@ -17,7 +17,11 @@ const { data, route, path } = rawData.length == 0
   : JSON.parse(new TextDecoder().decode(rawData));
 window.location = { pathname: path } as Location;
 const body = render(
-  <div><App><Component route={route} data={data} /></App></div>,
+  <div>
+    <App>
+      <Component route={route} data={data} />
+    </App>
+  </div>,
 );
 Deno.writeAllSync(
   Deno.stdout,

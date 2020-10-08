@@ -36,17 +36,14 @@ export async function serve(
   }
 
   for (const page of pages) {
-    router.get(
-      page.route,
-      async (context) => {
-        await oak.send(
-          context,
-          (page.hasGetStaticPaths ? context.request.url.pathname : page.name) +
-            ".html",
-          { root: options.staticDir },
-        );
-      },
-    );
+    router.get(page.route, async (context) => {
+      await oak.send(
+        context,
+        (page.hasGetStaticPaths ? context.request.url.pathname : page.name) +
+          ".html",
+        { root: options.staticDir },
+      );
+    });
   }
 
   if (!options.quiet) {
@@ -71,9 +68,9 @@ export async function serve(
   });
 
   app.addEventListener("listen", ({ hostname, port }) => {
-    console.log(colors.green(
-      `Listening on http://${hostname || "127.0.0.1"}:${port}`,
-    ));
+    console.log(
+      colors.green(`Listening on http://${hostname || "127.0.0.1"}:${port}`),
+    );
   });
 
   async function hotRefreshLoop() {
@@ -84,10 +81,8 @@ export async function serve(
     }
   }
 
-  await Promise.all(
-    [
-      app.listen(options.address),
-      options.hotRefresh ? hotRefreshLoop() : Promise.resolve(),
-    ],
-  );
+  await Promise.all([
+    app.listen(options.address),
+    options.hotRefresh ? hotRefreshLoop() : Promise.resolve(),
+  ]);
 }

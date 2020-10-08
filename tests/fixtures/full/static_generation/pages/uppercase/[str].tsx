@@ -12,7 +12,9 @@ interface Props {
 
 function IndexPage(props: PageProps<Props>) {
   const [path] = useLocation();
-  return <h1>{props.route!.str} {props.data.str} {path}</h1>;
+  return (
+    <h1>{props.route!.str} {props.data.str} {path}</h1>
+  );
 }
 
 export function getStaticPaths(): GetStaticPaths {

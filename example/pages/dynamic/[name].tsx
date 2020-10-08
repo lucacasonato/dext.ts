@@ -6,9 +6,7 @@ function UserPage(props: PageProps) {
 
   return (
     <>
-      <h1>
-        This is the page for {name}
-      </h1>
+      <h1>This is the page for {name}</h1>
       <p>
         <a href="/">Go home</a>
       </p>

@@ -15,10 +15,11 @@ export interface Page {
 }
 
 export async function findPages(pagesDir: string): Promise<Pages> {
-  const dir = fs.walk(
-    pagesDir,
-    { includeDirs: false, includeFiles: true, exts: ["tsx", "jsx"] },
-  );
+  const dir = fs.walk(pagesDir, {
+    includeDirs: false,
+    includeFiles: true,
+    exts: ["tsx", "jsx"],
+  });
   const pagePaths: string[] = [];
   for await (const file of dir) {
     if (file.isFile) {
@@ -26,50 +27,57 @@ export async function findPages(pagesDir: string): Promise<Pages> {
     }
   }
   pagePaths.sort();
-  const allPages = await Promise.all(pagePaths.map(async (page) => {
-    const name = page.substring(0, page.length - path.extname(page).length)
-      .replaceAll(new RegExp(path.SEP_PATTERN, "g"), "/");
-    const parts = name.split("/");
-    if (parts[parts.length - 1] === "index") {
-      parts.pop();
-    }
-    const route = "/" + parts.map((part) => {
-      if (part.startsWith("[...") && part.endsWith("]")) {
-        return `:${part.slice(1, part.length - 1)}*`;
+  const allPages = await Promise.all(
+    pagePaths.map(async (page) => {
+      const name = page
+        .substring(0, page.length - path.extname(page).length)
+        .replaceAll(new RegExp(path.SEP_PATTERN, "g"), "/");
+      const parts = name.split("/");
+      if (parts[parts.length - 1] === "index") {
+        parts.pop();
       }
-      if (part.startsWith("[") && part.endsWith("]")) {
-        return `:${part.slice(1, part.length - 1)}`;
-      }
-      return part;
-    }).join("/");
+      const route = "/" +
+        parts
+          .map((part) => {
+            if (part.startsWith("[...") && part.endsWith("]")) {
+              return `:${part.slice(1, part.length - 1)}*`;
+            }
+            if (part.startsWith("[") && part.endsWith("]")) {
+              return `:${part.slice(1, part.length - 1)}`;
+            }
+            return part;
+          })
+          .join("/");
 
-    const p = path.join(pagesDir, page).replaceAll(
-      new RegExp(path.SEP_PATTERN, "g"),
-      "/",
-    );
+      const p = path
+        .join(pagesDir, page)
+        .replaceAll(new RegExp(path.SEP_PATTERN, "g"), "/");
 
-    const { hasGetStaticData, hasGetStaticPaths } = await checkHasDataHooks(p);
-
-    if (hasGetStaticPaths && !route.includes(":")) {
-      throw new Error("Can not have getStaticPaths in non dynamic file");
-    }
-    if (hasGetStaticData && route.includes(":") && !hasGetStaticPaths) {
-      throw new Error(
-        "Can not have getStaticData in dynamic file without getStaticPaths",
+      const { hasGetStaticData, hasGetStaticPaths } = await checkHasDataHooks(
+        p,
       );
-    }
 
-    return ({
-      path: p,
-      name,
-      route,
-      hasGetStaticData,
-      hasGetStaticPaths,
-    });
-  }));
+      if (hasGetStaticPaths && !route.includes(":")) {
+        throw new Error("Can not have getStaticPaths in non dynamic file");
+      }
+      if (hasGetStaticData && route.includes(":") && !hasGetStaticPaths) {
+        throw new Error(
+          "Can not have getStaticData in dynamic file without getStaticPaths",
+        );
+      }
 
-  const pages = allPages.filter((d) =>
-    !d.name.startsWith("_") && !d.name.includes("/_")
+      return {
+        path: p,
+        name,
+        route,
+        hasGetStaticData,
+        hasGetStaticPaths,
+      };
+    }),
+  );
+
+  const pages = allPages.filter(
+    (d) => !d.name.startsWith("_") && !d.name.includes("/_"),
   );
   const app = allPages.find((d) => d.name === "_app");
   if (app?.hasGetStaticData === true) {
@@ -105,15 +113,15 @@ export async function checkHasDataHooks(
   }
   const body = new TextDecoder().decode(out);
   const data: Array<{ kind: string; name: string }> = JSON.parse(body);
-  const hasGetStaticPaths =
-    data.findIndex((d) =>
+  const hasGetStaticPaths = data.findIndex(
+    (d) =>
       (d.kind === "variable" || d.kind === "function") &&
-      d.name === "getStaticPaths"
-    ) !== -1;
-  const hasGetStaticData =
-    data.findIndex((d) =>
+      d.name === "getStaticPaths",
+  ) !== -1;
+  const hasGetStaticData = data.findIndex(
+    (d) =>
       (d.kind === "variable" || d.kind === "function") &&
-      d.name === "getStaticData"
-    ) !== -1;
+      d.name === "getStaticData",
+  ) !== -1;
   return { hasGetStaticPaths, hasGetStaticData };
 }
