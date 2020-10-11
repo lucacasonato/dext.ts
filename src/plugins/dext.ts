@@ -10,6 +10,7 @@ export function dextPlugin(
     hotRefreshHost?: string;
     typecheck: boolean;
     prerender: boolean;
+    debug: boolean;
   },
 ): Plugin {
   const pageMap: Record<string, Page> = {};
@@ -23,6 +24,8 @@ export function dextPlugin(
     "../runtime/hot_refresh.ts",
     import.meta.url,
   ).toString();
+  const debugURL = new URL("../../deps/preact/debug.ts", import.meta.url)
+    .toString();
   const documentURL = pages.document
     ? new URL(`file:///${pages.document.path}`).toString()
     : new URL("../runtime/default_document.tsx", import.meta.url).toString();
@@ -71,7 +74,8 @@ export function dextPlugin(
             }]]`;
           })
           .join(",");
-        const bundle = `import { start } from "${runtimeURL}";
+        const bundle = `${options.debug ? `import "${debugURL}";` : ""}
+        import { start } from "${runtimeURL}";
 import App from "${appURL}";
 ${
           options.hotRefresh

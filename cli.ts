@@ -37,6 +37,11 @@ try {
       "If static pages should be server side prerendered.",
       { default: true },
     )
+    .option(
+      "--debug [include:boolean]",
+      "If preact/debug should be included in the bundle.",
+      { default: false },
+    )
     .description("Build your application.")
     .action(build)
     .command("start [root]")
@@ -70,6 +75,11 @@ try {
       "If static pages should be server side prerendered.",
       { default: false },
     )
+    .option(
+      "--debug [include:boolean]",
+      "If preact/debug should be included in the bundle.",
+      { default: true },
+    )
     .description("Start your application in development mode.")
     .action(dev)
     .command("create [root]")
@@ -83,7 +93,7 @@ try {
 }
 
 async function build(
-  options: { typecheck: boolean; prerender: boolean },
+  options: { typecheck: boolean; prerender: boolean; debug: boolean },
   root?: string,
 ) {
   root = path.resolve(Deno.cwd(), root ?? "");
@@ -125,6 +135,7 @@ async function build(
     hotRefresh: false,
     typecheck: options.typecheck,
     prerender: options.prerender,
+    debug: options.debug,
   });
   console.log(colors.green(colors.bold("Build success.\n")));
 
@@ -218,6 +229,7 @@ async function dev(
     hotRefreshHost: string;
     typecheck: boolean;
     prerender: boolean;
+    debug: boolean;
   },
   maybeRoot?: string,
 ) {
@@ -265,6 +277,7 @@ async function dev(
         hotRefreshHost: options.hotRefreshHost,
         typecheck: options.typecheck,
         prerender: options.prerender,
+        debug: options.debug,
       });
       cache = out.cache!;
       doHotRefresh.resolve();

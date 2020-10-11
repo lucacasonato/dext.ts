@@ -49,6 +49,7 @@ export async function bundle(
     prerender: boolean;
     hotRefresh: boolean;
     hotRefreshHost?: string;
+    debug: boolean;
   },
 ): Promise<{ cache: RollupCache | undefined; stats: BundleStats | undefined }> {
   const outputOptions: OutputOptions = {
@@ -69,6 +70,7 @@ export async function bundle(
         hotRefreshHost: options.hotRefreshHost,
         typecheck: options.typecheck,
         prerender: options.prerender,
+        debug: options.debug,
       }),
       ...useCache(tsconfig),
       ...(options.minify
