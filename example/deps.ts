@@ -1,4 +1,4 @@
-export { Fragment, h } from "https://deno.land/x/dext@0.9.0/deps/preact/mod.ts";
+export { Fragment, h } from "https://deno.land/x/dext@0.9.1/deps/preact/mod.ts";
 export type {
   AppProps,
   DocumentProps,
@@ -6,4 +6,4 @@ export type {
   GetStaticDataContext,
   GetStaticPaths,
   PageProps,
-} from "https://deno.land/x/dext@0.9.0/mod.ts";
+} from "https://deno.land/x/dext@0.9.1/mod.ts";
