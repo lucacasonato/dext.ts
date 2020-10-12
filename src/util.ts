@@ -81,13 +81,15 @@ export async function findPages(pagesDir: string): Promise<Pages> {
   allPages.sort((a, b) => {
     const partsA = a.route.split("/");
     const partsB = b.route.split("/");
-    for (let i = 0; i < Math.min(partsA.length, partsB.length); i++) {
+    for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
       const partA = partsA[i];
       const partB = partsB[i];
+      if (partA === undefined) return -1;
+      if (partB === undefined) return 1;
       if (partA === partB) continue;
       const priorityA = partA.startsWith(":") ? partA.endsWith("*") ? 0 : 1 : 2;
       const priorityB = partB.startsWith(":") ? partB.endsWith("*") ? 0 : 1 : 2;
-      return priorityB - priorityA;
+      return Math.max(Math.min(priorityB - priorityA, 1), -1);
     }
     return 0;
   });
