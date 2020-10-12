@@ -40,7 +40,7 @@ export async function findPages(pagesDir: string): Promise<Pages> {
         parts
           .map((part) => {
             if (part.startsWith("[...") && part.endsWith("]")) {
-              return `:${part.slice(1, part.length - 1)}*`;
+              return `:${part.slice(4, part.length - 1)}*`;
             }
             if (part.startsWith("[") && part.endsWith("]")) {
               return `:${part.slice(1, part.length - 1)}`;
@@ -75,6 +75,22 @@ export async function findPages(pagesDir: string): Promise<Pages> {
       };
     }),
   );
+
+  // Make sure the page priority is correct (static should be
+  // favored over dynamic, should be favored over rest).
+  allPages.sort((a, b) => {
+    const partsA = a.route.split("/");
+    const partsB = b.route.split("/");
+    for (let i = 0; i < Math.min(partsA.length, partsB.length); i++) {
+      const partA = partsA[i];
+      const partB = partsB[i];
+      if (partA === partB) continue;
+      const priorityA = partA.startsWith(":") ? partA.endsWith("*") ? 0 : 1 : 2;
+      const priorityB = partB.startsWith(":") ? partB.endsWith("*") ? 0 : 1 : 2;
+      return priorityB - priorityA;
+    }
+    return 0;
+  });
 
   const pages = allPages.filter(
     (d) => !d.name.startsWith("_") && !d.name.includes("/_"),
