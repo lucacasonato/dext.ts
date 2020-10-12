@@ -12,6 +12,7 @@ import {
 } from "./deps/mod.ts";
 import { bundle } from "./src/bundle.ts";
 import { dependencyList } from "./src/dependency_graph.ts";
+import { exportCommand } from "./src/export.ts";
 import { serve } from "./src/serve.ts";
 import { findPages } from "./src/util.ts";
 
@@ -85,6 +86,8 @@ try {
     .command("create [root]")
     .description("Scaffold new application.")
     .action(create)
+    .command("export", exportCommand())
+    .description("Export a project for Netlify or other providers.")
     .command("completions", new CompletionsCommand())
     .parse(Deno.args);
 } catch (err) {
