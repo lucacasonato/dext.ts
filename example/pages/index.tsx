@@ -1,4 +1,4 @@
-import { Fragment, h } from "../deps.ts";
+import { Fragment, h, useLocation } from "../deps.ts";
 import type { GetStaticData, PageProps } from "../deps.ts";
 
 interface Data {
@@ -6,6 +6,9 @@ interface Data {
 }
 
 function IndexPage(props: PageProps<Data>) {
+  const [path] = useLocation();
+  console.log("index", path);
+
   return (
     <>
       <h1>Hello World!!!</h1>

@@ -1,5 +1,5 @@
 export function makeMatcher() {
-  let cache: Record<
+  const cache: Record<
     string,
     {
       keys: { name: string; repeat: boolean }[];
@@ -53,8 +53,8 @@ const pathToRegexp = (pattern: string) => {
 
   let match = null,
     lastIndex = 0,
-    keys = [],
     result = "";
+  const keys = [];
 
   while ((match = groupRx.exec(pattern)) !== null) {
     const [_, segment, mod] = match;
