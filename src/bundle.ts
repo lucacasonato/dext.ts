@@ -113,16 +113,15 @@ export async function bundle(
   if (options.minify) {
     const fileStats: Record<string, FileSize> = {};
 
-    const outGlob = path.join(outDir, "/**/*");
     const res = pooledMap(
       50,
-      fs.expandGlob(outGlob, {
-        exclude: [outGlob + ".br", outGlob + ".gz"],
-        globstar: true,
+      fs.walk(outDir, {
+        followSymlinks: false,
         includeDirs: false,
       }),
       async (entry) => {
         const path = entry.path;
+        if (path.endsWith(".br") || path.endsWith(".gz")) return;
         const file = await Deno.readFile(path);
         const gz = gzipEncode(file);
         await Deno.writeFile(path + ".gz", gz);
