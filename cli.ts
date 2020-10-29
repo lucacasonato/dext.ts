@@ -14,7 +14,7 @@ import { bundle } from "./src/bundle.ts";
 import { dependencyList } from "./src/dependency_graph.ts";
 import { exportCommand } from "./src/export.ts";
 import { serve } from "./src/serve.ts";
-import { findPages } from "./src/util.ts";
+import { findPages, printError } from "./src/util.ts";
 
 const VERSION = "0.9.1";
 
@@ -91,7 +91,7 @@ try {
     .command("completions", new CompletionsCommand())
     .parse(Deno.args);
 } catch (err) {
-  console.log(colors.red(colors.bold("error: ")) + err.message);
+  printError(err);
   Deno.exit(1);
 }
 
@@ -296,9 +296,7 @@ async function dev(
         ),
       );
     } catch (err) {
-      if (err.message != "Failed to prerender page") {
-        console.log(colors.red(colors.bold("error: ")) + err.message);
-      }
+      printError(err);
     }
   }, 100);
 
