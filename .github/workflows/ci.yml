@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        deno: ["v1.x", "nightly"]
+        deno: ["nightly"] # TODO: reenable "v1.x"
         os: [macOS-latest, windows-latest, ubuntu-latest]
 
     steps:
