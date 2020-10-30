@@ -78,7 +78,10 @@ async function loadComponent(
     ComponentType<PageProps>,
     unknown,
   ] = await Promise.all([
-    componentPromise.then((m) => m.default),
+    componentPromise.then((m) => m.default).catch((err) => {
+      location.reload();
+      throw err;
+    }),
     (async () => {
       if (hasStaticData) {
         const req = await fetch(`/_dext/${path.slice(1) || "index"}.json`, {
