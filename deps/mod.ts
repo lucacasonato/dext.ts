@@ -45,7 +45,7 @@ export { compress as brotliEncode } from "https://deno.land/x/brotli@v0.1.4/mod.
 
 import { default as _debounce } from "https://unpkg.com/lodash-es@4.17.15/debounce.js";
 export const debounce = _debounce as <
-  T extends (...args: unknown[]) => unknown
+  T extends (...args: unknown[]) => unknown,
 >(
   func: T,
   wait?: number,
@@ -53,7 +53,7 @@ export const debounce = _debounce as <
     leading?: boolean;
     maxWait?: number;
     trailing?: boolean;
-  }
+  },
 ) => T;
 
 export { prettyBytes } from "https://raw.githubusercontent.com/BrunnerLivio/deno-pretty-bytes/db6d9ede681f666f5b6f58aa35ba5b638c820f84/prettyBytes.ts";
