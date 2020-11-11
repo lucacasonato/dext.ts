@@ -1,6 +1,6 @@
 import { h } from "../../deps/preact/mod.ts";
 import type { ComponentType } from "../../deps/preact/mod.ts";
-import { render } from "../../deps/preact-render-to-string/mod.ts";
+import { render } from "../../deps/preact/ssr.ts";
 import type { AppProps, PageProps } from "./type.ts";
 
 const [Component, App, rawData]: [
