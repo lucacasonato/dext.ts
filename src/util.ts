@@ -1,4 +1,4 @@
-import { fs, path } from "../deps/mod.ts";
+import { colors, fs, path } from "../deps/mod.ts";
 
 export interface Pages {
   pages: Page[];
@@ -142,4 +142,16 @@ export async function checkHasDataHooks(
       d.name === "getStaticData",
   ) !== -1;
   return { hasGetStaticPaths, hasGetStaticData };
+}
+
+// deno-lint-ignore no-explicit-any
+export function printError(err: any) {
+  if (err.message != "Failed to prerender page") {
+    console.log(colors.red(colors.bold("error: ")) + err.message);
+    if (err.code === "PARSE_ERROR") {
+      console.log(
+        `${err.loc.file}:${err.loc.line}:${err.loc.column}\n${err.frame}`,
+      );
+    }
+  }
 }
