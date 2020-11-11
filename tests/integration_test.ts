@@ -1,7 +1,7 @@
 import {
   assert,
   assertEquals,
-  assertStringContains,
+  assertStringIncludes,
   exists,
   join,
 } from "../deps/test.ts";
@@ -13,7 +13,7 @@ integrationTest({
   clean: true,
   async after(ctx) {
     assert(ctx.status.success);
-    assertStringContains(ctx.stdout, "Build success.");
+    assertStringIncludes(ctx.stdout, "Build success.");
 
     assertEquals(
       JSON.parse(
@@ -30,8 +30,8 @@ integrationTest({
     assert(await exists(`${indexhtml}.br`));
 
     const index = await Deno.readTextFile(indexhtml);
-    assertStringContains(index, `<div id="__dext">`);
-    assertStringContains(index, "<h1>Hello World</h1>");
+    assertStringIncludes(index, `<div id="__dext">`);
+    assertStringIncludes(index, "<h1>Hello World</h1>");
 
     assertEquals(
       await Deno.readTextFile(join(staticdir, "test.txt")),
@@ -46,7 +46,7 @@ integrationTest({
   clean: true,
   async after(ctx) {
     assert(ctx.status.success);
-    assertStringContains(ctx.stdout, "Build success.");
+    assertStringIncludes(ctx.stdout, "Build success.");
 
     assertEquals(
       JSON.parse(
@@ -63,10 +63,10 @@ integrationTest({
     assert(await exists(`${indexhtml}.br`));
 
     const index = await Deno.readTextFile(indexhtml);
-    assertStringContains(index, `<div id="__dext">`);
-    assertStringContains(index, "<title>Hello World!</title>");
-    assertStringContains(index, "<p>My Custom App!</p>");
-    assertStringContains(index, "<h1>Hello World</h1>");
+    assertStringIncludes(index, `<div id="__dext">`);
+    assertStringIncludes(index, "<title>Hello World!</title>");
+    assertStringIncludes(index, "<p>My Custom App!</p>");
+    assertStringIncludes(index, "<h1>Hello World</h1>");
   },
 });
 
@@ -76,7 +76,7 @@ integrationTest({
   clean: true,
   async after(ctx) {
     assert(ctx.status.success);
-    assertStringContains(ctx.stdout, "Build success.");
+    assertStringIncludes(ctx.stdout, "Build success.");
 
     assertEquals(
       JSON.parse(
@@ -99,21 +99,21 @@ integrationTest({
     assert(await exists(`${indexhtml}.gz`));
     assert(await exists(`${indexhtml}.br`));
     const html = await Deno.readTextFile(indexhtml);
-    assertStringContains(html, `<div id="__dext">`);
-    assertStringContains(html, "<h1>Hello world</h1>");
+    assertStringIncludes(html, `<div id="__dext">`);
+    assertStringIncludes(html, "<h1>Hello world</h1>");
 
     const lucaPath = join(staticdir, "uppercase", "luca.html");
-    assertStringContains(
+    assertStringIncludes(
       await Deno.readTextFile(lucaPath),
       "<h1>luca LUCA /uppercase/luca</h1>",
     );
     const bartekPath = join(staticdir, "uppercase", "bartek.html");
-    assertStringContains(
+    assertStringIncludes(
       await Deno.readTextFile(bartekPath),
       "<h1>bartek BARTEK /uppercase/bartek</h1>",
     );
     const ryanPath = join(staticdir, "uppercase", "ryan.html");
-    assertStringContains(
+    assertStringIncludes(
       await Deno.readTextFile(ryanPath),
       "<h1>ryan RYAN /uppercase/ryan</h1>",
     );
