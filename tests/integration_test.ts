@@ -17,9 +17,9 @@ integrationTest({
 
     assertEquals(
       JSON.parse(
-        await Deno.readTextFile(join(ctx.dir, ".dext", "pagemap.json"))
+        await Deno.readTextFile(join(ctx.dir, ".dext", "pagemap.json")),
       ),
-      [{ name: "index", route: "/", hasGetStaticPaths: false }]
+      [{ name: "index", route: "/", hasGetStaticPaths: false }],
     );
 
     const staticdir = join(ctx.dir, ".dext", "static");
@@ -35,7 +35,7 @@ integrationTest({
 
     assertEquals(
       await Deno.readTextFile(join(staticdir, "test.txt")),
-      "hello world"
+      "hello world",
     );
   },
 });
@@ -50,9 +50,9 @@ integrationTest({
 
     assertEquals(
       JSON.parse(
-        await Deno.readTextFile(join(ctx.dir, ".dext", "pagemap.json"))
+        await Deno.readTextFile(join(ctx.dir, ".dext", "pagemap.json")),
       ),
-      [{ name: "index", route: "/", hasGetStaticPaths: false }]
+      [{ name: "index", route: "/", hasGetStaticPaths: false }],
     );
 
     const staticdir = join(ctx.dir, ".dext", "static");
@@ -80,7 +80,7 @@ integrationTest({
 
     assertEquals(
       JSON.parse(
-        await Deno.readTextFile(join(ctx.dir, ".dext", "pagemap.json"))
+        await Deno.readTextFile(join(ctx.dir, ".dext", "pagemap.json")),
       ),
       [
         { name: "index", route: "/", hasGetStaticPaths: false },
@@ -89,7 +89,7 @@ integrationTest({
           route: "/uppercase/:str",
           hasGetStaticPaths: true,
         },
-      ]
+      ],
     );
 
     const staticdir = join(ctx.dir, ".dext", "static");
@@ -105,17 +105,17 @@ integrationTest({
     const lucaPath = join(staticdir, "uppercase", "luca.html");
     assertStringIncludes(
       await Deno.readTextFile(lucaPath),
-      "<h1>luca LUCA /uppercase/luca</h1>"
+      "<h1>luca LUCA /uppercase/luca</h1>",
     );
     const bartekPath = join(staticdir, "uppercase", "bartek.html");
     assertStringIncludes(
       await Deno.readTextFile(bartekPath),
-      "<h1>bartek BARTEK /uppercase/bartek</h1>"
+      "<h1>bartek BARTEK /uppercase/bartek</h1>",
     );
     const ryanPath = join(staticdir, "uppercase", "ryan.html");
     assertStringIncludes(
       await Deno.readTextFile(ryanPath),
-      "<h1>ryan RYAN /uppercase/ryan</h1>"
+      "<h1>ryan RYAN /uppercase/ryan</h1>",
     );
 
     const indexJSONPath = join(staticdir, "_dext", "index.json");
