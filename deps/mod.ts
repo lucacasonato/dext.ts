@@ -1,4 +1,4 @@
-export { rollup } from "https://raw.githubusercontent.com/denofn/denopack/655747b7087d765b7bd5ab59f42f9389f2ad6e34/deps.ts";
+export { rollup } from "https://raw.githubusercontent.com/denofn/denopack/d9b2416279ce5d9eb66af235df6bd89c1891d306/deps.ts";
 export type {
   ModuleFormat,
   OutputAsset,
@@ -11,13 +11,13 @@ export type {
   RollupCache,
   RollupOptions,
   RollupOutput,
-} from "https://raw.githubusercontent.com/denofn/denopack/655747b7087d765b7bd5ab59f42f9389f2ad6e34/deps.ts";
+} from "https://raw.githubusercontent.com/denofn/denopack/d9b2416279ce5d9eb66af235df6bd89c1891d306/deps.ts";
 
-export { useCache } from "https://raw.githubusercontent.com/denofn/denopack/655747b7087d765b7bd5ab59f42f9389f2ad6e34/plugin/mod.ts";
-export { pluginTerserTransform } from "https://raw.githubusercontent.com/denofn/denopack/655747b7087d765b7bd5ab59f42f9389f2ad6e34/plugin/terserTransform/mod.ts";
+export { useCache } from "https://raw.githubusercontent.com/denofn/denopack/d9b2416279ce5d9eb66af235df6bd89c1891d306/plugin/mod.ts";
+export { pluginTerserTransform } from "https://raw.githubusercontent.com/denofn/denopack/d9b2416279ce5d9eb66af235df6bd89c1891d306/plugin/terserTransform/mod.ts";
 
-export { persistSourceMaps } from "https://raw.githubusercontent.com/denofn/denopack/655747b7087d765b7bd5ab59f42f9389f2ad6e34/cli/persistSourceMaps.ts";
-export { emitFiles } from "https://raw.githubusercontent.com/denofn/denopack/655747b7087d765b7bd5ab59f42f9389f2ad6e34/cli/emitFiles.ts";
+export { persistSourceMaps } from "https://raw.githubusercontent.com/denofn/denopack/d9b2416279ce5d9eb66af235df6bd89c1891d306/cli/persistSourceMaps.ts";
+export { emitFiles } from "https://raw.githubusercontent.com/denofn/denopack/d9b2416279ce5d9eb66af235df6bd89c1891d306/cli/emitFiles.ts";
 
 // std
 export * as colors from "https://deno.land/std@0.77.0/fmt/colors.ts";
