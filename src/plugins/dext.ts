@@ -1,4 +1,4 @@
-import { compile, path, Plugin } from "../../deps/mod.ts";
+import { compile, path, Plugin, pooledMap } from "../../deps/mod.ts";
 import type { GetStaticDataContext, GetStaticPaths } from "../type.ts";
 import type { Page, Pages } from "../util.ts";
 
@@ -24,8 +24,10 @@ export function dextPlugin(
     "../runtime/hot_refresh.ts",
     import.meta.url,
   ).toString();
-  const debugURL = new URL("../../deps/preact/debug.ts", import.meta.url)
-    .toString();
+  const debugURL = new URL(
+    "../../deps/preact/debug.ts",
+    import.meta.url,
+  ).toString();
   const documentURL = pages.document
     ? new URL(`file:///${pages.document.path}`).toString()
     : new URL("../runtime/default_document.tsx", import.meta.url).toString();
@@ -94,7 +96,7 @@ start([${routes}], App);`;
     async generateBundle(_options, bundle) {
       const documentTemplate = await prerenderDocument(documentURL, options);
 
-      for (const name in bundle) {
+      const pages = pooledMap(10, Object.keys(bundle), async (name) => {
         const file = bundle[name];
         if (file.type === "chunk" && file.isEntry) {
           const component = file.facadeModuleId!.substring(
@@ -114,7 +116,7 @@ start([${routes}], App);`;
 
           const createPath = compile(page.route);
 
-          for (const page_ of paths.pages) {
+          const pages = pooledMap(10, paths.pages, async (page_) => {
             const path = page.hasGetStaticPaths
               ? createPath(page_.route).slice(1)
               : page.name;
@@ -149,8 +151,16 @@ start([${routes}], App);`;
               name: "denopack HTML Asset",
               fileName: `${path}.html`,
             });
+          });
+
+          for await (const _ of pages) {
+            // do nothing :-)
           }
         }
+      });
+
+      for await (const _ of pages) {
+        // do nothing :-)
       }
     },
   };
