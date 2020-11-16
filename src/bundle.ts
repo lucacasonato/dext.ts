@@ -132,8 +132,7 @@ export async function bundle(
         await Deno.writeFile(path + ".gz", gz);
         const br = brotliEncode(file, undefined, 11);
         await Deno.writeFile(path + ".br", br);
-        console.log("path", path.slice(outDir.length).replace("\\", "/"));
-        fileStats[path.slice(outDir.length).replace("\\", "/")] = {
+        fileStats[path.slice(outDir.length).replaceAll("\\", "/")] = {
           raw: file.length,
           gzip: gz.length,
           brotli: br.length,
@@ -154,7 +153,6 @@ export async function bundle(
 
     for (const out of chunks) {
       const filename = `/${out.fileName}`;
-      console.log(filename);
       if (out.facadeModuleId && out.facadeModuleId.startsWith("dext-page://")) {
         const page = pages.pages.find(
           (p) =>
