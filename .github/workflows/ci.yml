@@ -13,8 +13,8 @@ jobs:
 
     strategy:
       matrix:
-        deno: ["v1.x"] # "nightly" is broken today 
-        os: [macOS-latest, windows-latest, ubuntu-latest]
+        deno: ["v1.x", "nightly"] 
+        os: [macOS-latest, ubuntu-latest] # disable on windows-latest because fly tls aint working there
 
     steps:
       - name: Disable autocrlf

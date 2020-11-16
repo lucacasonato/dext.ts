@@ -57,6 +57,8 @@ export async function bundle(
     format: "es",
     sourcemap: true,
     compact: true,
+    chunkFileNames: "static/[name]-[hash].js",
+    assetFileNames: "assets/[name]-[hash][extname]",
   };
 
   const tsconfig = JSON.parse(await Deno.readTextFile(options.tsconfigPath));
@@ -130,7 +132,7 @@ export async function bundle(
         await Deno.writeFile(path + ".gz", gz);
         const br = brotliEncode(file, undefined, 11);
         await Deno.writeFile(path + ".br", br);
-        fileStats[path.slice(outDir.length).replace("\\", "/")] = {
+        fileStats[path.slice(outDir.length).replaceAll("\\", "/")] = {
           raw: file.length,
           gzip: gz.length,
           brotli: br.length,
