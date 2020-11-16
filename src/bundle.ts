@@ -50,13 +50,15 @@ export async function bundle(
     hotRefresh: boolean;
     hotRefreshHost?: string;
     debug: boolean;
-  },
+  }
 ): Promise<{ cache: RollupCache | undefined; stats: BundleStats | undefined }> {
   const outputOptions: OutputOptions = {
     dir: options.outDir,
     format: "es",
     sourcemap: true,
     compact: true,
+    chunkFileNames: "static/[name]-[hash].js",
+    assetFileNames: "assets/[name]-[hash][extname]",
   };
 
   const tsconfig = JSON.parse(await Deno.readTextFile(options.tsconfigPath));
@@ -75,12 +77,12 @@ export async function bundle(
       ...useCache(tsconfig),
       ...(options.minify
         ? [
-          pluginTerserTransform({
-            module: true,
-            compress: true,
-            mangle: true,
-          }),
-        ]
+            pluginTerserTransform({
+              module: true,
+              compress: true,
+              mangle: true,
+            }),
+          ]
         : []),
     ],
     output: outputOptions,
@@ -135,7 +137,7 @@ export async function bundle(
           gzip: gz.length,
           brotli: br.length,
         };
-      },
+      }
     );
 
     for await (const _ of res) {
@@ -146,15 +148,14 @@ export async function bundle(
     const shared: Record<string, FileSize> = {};
 
     const chunks = generated.output.filter(
-      (d) => d.type === "chunk",
+      (d) => d.type === "chunk"
     ) as OutputChunk[];
 
     for (const out of chunks) {
       const filename = `/${out.fileName}`;
       if (out.facadeModuleId && out.facadeModuleId.startsWith("dext-page://")) {
         const page = pages.pages.find(
-          (p) =>
-            p.path === out.facadeModuleId!.substring("dext-page://".length),
+          (p) => p.path === out.facadeModuleId!.substring("dext-page://".length)
         )!;
         const imports = [
           ...flattenImports(chunks, out.fileName),
@@ -207,7 +208,7 @@ export async function bundle(
 function flattenImports(
   chunks: OutputChunk[],
   fileName: string,
-  visited: string[] = [],
+  visited: string[] = []
 ): string[] {
   const chunk = chunks.find((chunk) => (chunk.fileName = fileName));
   if (!chunk) throw new Error("Failed to find chunk " + fileName);
@@ -217,7 +218,7 @@ function flattenImports(
         if (visited.includes(fileName)) return [];
         visited.push(fileName);
         return [fileName, ...flattenImports(chunks, fileName, visited)];
-      }),
+      })
     ),
   ];
 }
