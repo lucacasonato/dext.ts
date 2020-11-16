@@ -132,6 +132,7 @@ export async function bundle(
         await Deno.writeFile(path + ".gz", gz);
         const br = brotliEncode(file, undefined, 11);
         await Deno.writeFile(path + ".br", br);
+        console.log("path", path.slice(outDir.length).replace("\\", "/"))
         fileStats[path.slice(outDir.length).replace("\\", "/")] = {
           raw: file.length,
           gzip: gz.length,
