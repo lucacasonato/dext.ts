@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        deno: ["v1.x", "nightly"] 
+        deno: ["v1.x", "nightly"]
         os: [macOS-latest, ubuntu-latest, windows-latest]
 
     steps:
@@ -35,7 +35,9 @@ jobs:
         run: deno lint --unstable
 
       - name: Install dependencies
-        run: deno cache --no-check ./deps/mod.ts
+        run: |
+          deno cache --no-check ./deps/mod.ts ./example/deps.ts
+          deno cache ./deps/mod.ts ./example/deps.ts
 
       - name: Run Tests
         run: deno test -A --unstable
