@@ -5,10 +5,10 @@ export const locationCtx = createContext<[string, (to: string) => void]>(
   ["", () => {}],
 );
 
-export function useLocation() {
+export function useLocation(): readonly [string, (to: string) => void] {
   // @ts-expect-error because this is a hidden variable.
   if (window.__DEXT_SSR) {
-    return [window.location.pathname, () => {
+    return [window.location.pathname, (_to: string) => {
       throw new TypeError("Can not navigate in SSR context.");
     }];
   }
