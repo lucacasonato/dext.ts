@@ -31,6 +31,9 @@ jobs:
       - name: Check formatting
         run: deno fmt --check
 
+      - name: Check lint
+        run: deno lint --unstable
+
       - name: Install dependencies
         run: deno cache --no-check ./deps/mod.ts
 
