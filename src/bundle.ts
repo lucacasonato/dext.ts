@@ -88,9 +88,6 @@ export async function bundle(
     output: outputOptions,
     preserveEntrySignatures: false,
     cache: options.cache,
-    treeshake: {
-      moduleSideEffects: false,
-    },
   };
 
   const outDir = outputOptions.dir!;

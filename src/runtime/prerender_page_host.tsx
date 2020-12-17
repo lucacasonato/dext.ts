@@ -16,6 +16,8 @@ const { data, route, path } = rawData.length == 0
   ? undefined
   : JSON.parse(new TextDecoder().decode(rawData));
 window.location = { pathname: path } as Location;
+// @ts-expect-error because this is a hidden variable.
+window.__DEXT_SSR = true;
 const body = render(
   <div>
     <App>

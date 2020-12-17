@@ -13,8 +13,8 @@ jobs:
 
     strategy:
       matrix:
-        deno: ["v1.x", "nightly"] 
-        os: [macOS-latest, ubuntu-latest] # disable on windows-latest because fly tls aint working there
+        deno: ["v1.x", "nightly"]
+        os: [macOS-latest, ubuntu-latest, windows-latest]
 
     steps:
       - name: Disable autocrlf
@@ -31,8 +31,12 @@ jobs:
       - name: Check formatting
         run: deno fmt --check
 
+      - name: Check lint
+        run: deno lint --unstable
+
       - name: Install dependencies
-        run: deno cache --no-check ./deps/mod.ts
+        run: |
+          deno cache --no-check ./deps/mod.ts ./deps/preact/mod.ts ./deps/preact/hooks.ts ./deps/preact/debug.ts ./deps/preact/ssr.ts ./example/deps.ts
 
       - name: Run Tests
         run: deno test -A --unstable

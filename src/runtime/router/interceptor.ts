@@ -1,12 +1,14 @@
-// deno-lint-ignore-file no-undef
 import type { Router } from "./router.ts";
 
-export function initRouter(router: Router<unknown>) {
+export function initRouter(
+  router: Router<unknown>,
+  navigate: (to: string) => void,
+) {
   function routeFromLink(node: HTMLAnchorElement) {
     // only valid elements
     if (!node || !node.getAttribute) return;
 
-    let href = node.getAttribute("href"),
+    const href = node.getAttribute("href"),
       target = node.getAttribute("target");
 
     // ignore links with targets and non-path URLs
@@ -20,7 +22,7 @@ export function initRouter(router: Router<unknown>) {
 
     const [route] = router.getRoute(href);
     if (route) {
-      history.pushState(null, "", href);
+      navigate(href);
       return true;
     }
 

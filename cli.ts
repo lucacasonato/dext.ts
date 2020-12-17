@@ -345,8 +345,6 @@ async function create(_options: unknown, maybeRoot?: string) {
         jsx: "react",
         jsxFactory: "h",
         jsxFragmentFactory: "Fragment",
-        importsNotUsedAsValues: "error",
-        isolatedModules: true,
       },
     }),
   );
