@@ -10,11 +10,12 @@ import type { AppProps, PageProps } from "./type.ts";
 import { Router } from "./router/router.ts";
 import { initRouter } from "./router/interceptor.ts";
 import { locationCtx } from "./router/location.ts";
+import { memo } from "./memo.js";
 
 type Route = [route: string, data: RouteData];
 type RouteData = [
   component: () => Promise<{ default: ComponentType<PageProps> }>,
-  hasStaticData: boolean,
+  hasStaticData: boolean
 ];
 
 export async function start(routes: Route[], app: ComponentType<AppProps>) {
@@ -27,7 +28,7 @@ export async function start(routes: Route[], app: ComponentType<AppProps>) {
 
   hydrate(
     <Dext router={router} app={app} initialPage={initialPage} />,
-    document.getElementById("__dext")!,
+    document.getElementById("__dext")!
   );
 }
 
@@ -43,16 +44,16 @@ function Dext(props: {
   const [desiredPath, setDesiredPath] = useState(window.location.pathname);
   const [desiredRoute, desiredMatch] = useMemo(
     () => props.router.getRoute(desiredPath),
-    [
-      props.router,
-      desiredPath,
-    ],
+    [props.router, desiredPath]
   );
 
-  const navigate = useCallback((to: string) => {
-    history.pushState(null, "", to);
-    setDesiredPath(to);
-  }, [setDesiredPath]);
+  const navigate = useCallback(
+    (to: string) => {
+      history.pushState(null, "", to);
+      setDesiredPath(to);
+    },
+    [setDesiredPath]
+  );
 
   useEffect(() => {
     // sets up event listeners on <a> elements
@@ -63,48 +64,60 @@ function Dext(props: {
     });
   }, [props.router, navigate]);
 
-  const [[Page, path, match], setPage] = useState<
+  const [page, setPage] = useState<
     [PageComponent | null, string, Record<string, string | string[]>]
-  >([
-    props.initialPage,
-    desiredPath,
-    desiredMatch,
-  ]);
+  >([props.initialPage, desiredPath, desiredMatch]);
 
   useEffect(() => {
     let cancelled = false;
     if (desiredRoute) {
-      loadComponent(desiredRoute[1][0](), desiredRoute[1][1], desiredPath).then(
-        (page) => {
+      loadComponent(desiredRoute[1][0](), desiredRoute[1][1], desiredPath)
+        .then((page) => {
           if (!cancelled) {
             setPage([page, desiredPath, desiredMatch]);
           }
-        },
-      );
+        })
+        .catch((err) => {
+          if (!cancelled) {
+            console.error(err);
+            location.pathname = desiredPath;
+          }
+        });
     } else {
       setPage([null, desiredPath, desiredMatch]);
     }
     () => (cancelled = true);
   }, [desiredRoute, desiredPath, desiredMatch]);
 
-  const App = props.app;
-  return (
-    <locationCtx.Provider value={[path, navigate]}>
-      <div>
-        <App>{Page === null ? <Error404 /> : <Page route={match!} />}</App>
-      </div>
-    </locationCtx.Provider>
-  );
+  return <DextPage App={props.app} page={page} navigate={navigate} />;
 }
+
+const DextPage = memo(
+  (props: {
+    App: ComponentType<AppProps>;
+    page: [PageComponent | null, string, Record<string, string | string[]>];
+    navigate: (to: string) => void;
+  }) => {
+    const { App, page, navigate } = props;
+    const [Page, path, match] = page;
+    return (
+      <locationCtx.Provider value={[path, navigate]}>
+        <div>
+          <App>{Page === null ? <Error404 /> : <Page route={match!} />}</App>
+        </div>
+      </locationCtx.Provider>
+    );
+  }
+);
 
 async function loadComponent(
   componentPromise: Promise<{ default: ComponentType<PageProps> }>,
   hasStaticData: boolean,
-  path: string,
+  path: string
 ): Promise<PageComponent> {
   const [Component, data]: [
     ComponentType<PageProps>,
-    unknown,
+    unknown
   ] = await Promise.all([
     componentPromise.then((m) => m.default),
     (async () => {

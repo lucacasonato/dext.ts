@@ -7,7 +7,6 @@ interface Data {
 
 function IndexPage(props: PageProps<Data>) {
   const [path] = useLocation();
-  console.log("index", path);
 
   return (
     <>
