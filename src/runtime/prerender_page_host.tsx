@@ -2,7 +2,6 @@ import { h } from "../../deps/preact/mod.ts";
 import type { ComponentType } from "../../deps/preact/mod.ts";
 import { render } from "../../deps/preact/ssr.ts";
 import type { AppProps, PageProps } from "./type.ts";
-import { locationCtx } from "./router/location.ts";
 
 const [Component, App, rawData]: [
   ComponentType<PageProps>,
@@ -17,22 +16,13 @@ const { data, route, path } = rawData.length == 0
   ? undefined
   : JSON.parse(new TextDecoder().decode(rawData));
 window.location = { pathname: path } as Location;
+// @ts-expect-error because this is a hidden variable.
+window.__DEXT_SSR = true;
 const body = render(
   <div>
-    <locationCtx.Provider
-      value={[
-        path,
-        () => {
-          throw new TypeError(
-            "`navigate` from `useLocation` may not be called in the context of server side rendering.",
-          );
-        },
-      ]}
-    >
-      <App>
-        <Component route={route} data={data} />
-      </App>
-    </locationCtx.Provider>
+    <App>
+      <Component route={route} data={data} />
+    </App>
   </div>,
 );
 Deno.writeAllSync(
