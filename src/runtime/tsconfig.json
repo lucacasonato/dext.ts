@@ -4,7 +4,6 @@
     "jsx": "react",
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment",
-    "importsNotUsedAsValues": "error",
-    "isolatedModules": true
+    "importsNotUsedAsValues": "error"
   }
 }
