@@ -15,12 +15,12 @@ import { memo } from "./memo.js";
 type Route = [route: string, data: RouteData];
 type RouteData = [
   component: () => Promise<{ default: ComponentType<PageProps> }>,
-  hasStaticData: boolean
+  hasStaticData: boolean,
 ];
 
 export async function start(routes: Route[], app: ComponentType<AppProps>) {
   const router = new Router<RouteData>(routes);
-  const path = location.pathname;
+  const path = window.location.pathname;
   const [route] = router.getRoute(path);
   if (!route) throw new Error("Failed to match inital route.");
 
@@ -28,7 +28,7 @@ export async function start(routes: Route[], app: ComponentType<AppProps>) {
 
   hydrate(
     <Dext router={router} app={app} initialPage={initialPage} />,
-    document.getElementById("__dext")!
+    window.document.getElementById("__dext")!,
   );
 }
 
@@ -44,15 +44,15 @@ function Dext(props: {
   const [desiredPath, setDesiredPath] = useState(window.location.pathname);
   const [desiredRoute, desiredMatch] = useMemo(
     () => props.router.getRoute(desiredPath),
-    [props.router, desiredPath]
+    [props.router, desiredPath],
   );
 
   const navigate = useCallback(
     (to: string) => {
-      history.pushState(null, "", to);
+      window.history.pushState(null, "", to);
       setDesiredPath(to);
     },
-    [setDesiredPath]
+    [setDesiredPath],
   );
 
   useEffect(() => {
@@ -60,7 +60,7 @@ function Dext(props: {
     initRouter(props.router, navigate);
 
     window.addEventListener("popstate", (event) => {
-      setDesiredPath(location.pathname);
+      setDesiredPath(window.location.pathname);
     });
   }, [props.router, navigate]);
 
@@ -80,7 +80,7 @@ function Dext(props: {
         .catch((err) => {
           if (!cancelled) {
             console.error(err);
-            location.pathname = desiredPath;
+            window.location.pathname = desiredPath;
           }
         });
     } else {
@@ -107,17 +107,17 @@ const DextPage = memo(
         </div>
       </locationCtx.Provider>
     );
-  }
+  },
 );
 
 async function loadComponent(
   componentPromise: Promise<{ default: ComponentType<PageProps> }>,
   hasStaticData: boolean,
-  path: string
+  path: string,
 ): Promise<PageComponent> {
   const [Component, data]: [
     ComponentType<PageProps>,
-    unknown
+    unknown,
   ] = await Promise.all([
     componentPromise.then((m) => m.default),
     (async () => {

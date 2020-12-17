@@ -48,7 +48,7 @@ export const getStaticPaths = (): GetStaticPaths => {
 };
 
 export const getStaticData = (
-  ctx: GetStaticDataContext
+  ctx: GetStaticDataContext,
 ): GetStaticData<Props> => {
   return {
     data: {
