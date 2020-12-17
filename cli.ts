@@ -344,7 +344,7 @@ async function create(_options: unknown, maybeRoot?: string) {
         lib: ["esnext", "dom", "deno.ns"],
         jsx: "react",
         jsxFactory: "h",
-        jsxFragmentFactory: "Fragment"
+        jsxFragmentFactory: "Fragment",
       },
     }),
   );
