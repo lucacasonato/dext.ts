@@ -3,7 +3,6 @@
     "lib": ["esnext", "dom", "deno.ns"],
     "jsx": "react",
     "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment",
-    "importsNotUsedAsValues": "error"
+    "jsxFragmentFactory": "Fragment"
   }
 }
