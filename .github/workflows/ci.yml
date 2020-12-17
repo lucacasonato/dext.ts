@@ -36,8 +36,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          deno cache --no-check ./deps/mod.ts ./example/deps.ts
-          deno cache ./deps/mod.ts ./example/deps.ts
+          deno cache --no-check ./deps/mod.ts ./deps/preact/mod.ts ./deps/preact/hooks.ts ./deps/preact/debug.ts ./deps/preact/ssr.ts ./example/deps.ts
 
       - name: Run Tests
         run: deno test -A --unstable
