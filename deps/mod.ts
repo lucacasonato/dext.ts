@@ -1,4 +1,4 @@
-export { rollup } from "https://raw.githubusercontent.com/denofn/denopack/77aa4af97421999a14a80c3497ab5dcd64bac3f0/deps.ts";
+export { rollup } from "https://raw.githubusercontent.com/denofn/denopack/8bae39bef47e532a1e8d0f6700b72a2192f7bca4/deps.ts";
 export type {
   ModuleFormat,
   OutputAsset,
@@ -11,39 +11,39 @@ export type {
   RollupCache,
   RollupOptions,
   RollupOutput,
-} from "https://raw.githubusercontent.com/denofn/denopack/77aa4af97421999a14a80c3497ab5dcd64bac3f0/deps.ts";
+} from "https://raw.githubusercontent.com/denofn/denopack/8bae39bef47e532a1e8d0f6700b72a2192f7bca4/deps.ts";
 
-export { useCache } from "https://raw.githubusercontent.com/denofn/denopack/77aa4af97421999a14a80c3497ab5dcd64bac3f0/plugin/mod.ts";
-export { pluginTerserTransform } from "https://raw.githubusercontent.com/denofn/denopack/77aa4af97421999a14a80c3497ab5dcd64bac3f0/plugin/terserTransform/mod.ts";
+export { useCache } from "https://raw.githubusercontent.com/denofn/denopack/8bae39bef47e532a1e8d0f6700b72a2192f7bca4/plugin/mod.ts";
+export { pluginTerserTransform } from "https://raw.githubusercontent.com/denofn/denopack/8bae39bef47e532a1e8d0f6700b72a2192f7bca4/plugin/terserTransform/mod.ts";
 
-export { persistSourceMaps } from "https://raw.githubusercontent.com/denofn/denopack/77aa4af97421999a14a80c3497ab5dcd64bac3f0/cli/persistSourceMaps.ts";
-export { emitFiles } from "https://raw.githubusercontent.com/denofn/denopack/77aa4af97421999a14a80c3497ab5dcd64bac3f0/cli/emitFiles.ts";
+export { persistSourceMaps } from "https://raw.githubusercontent.com/denofn/denopack/8bae39bef47e532a1e8d0f6700b72a2192f7bca4/cli/persistSourceMaps.ts";
+export { emitFiles } from "https://raw.githubusercontent.com/denofn/denopack/8bae39bef47e532a1e8d0f6700b72a2192f7bca4/cli/emitFiles.ts";
 
 // std
-export * as colors from "https://deno.land/std@0.77.0/fmt/colors.ts";
-export * as path from "https://deno.land/std@0.77.0/path/mod.ts";
-export * as fs from "https://deno.land/std@0.77.0/fs/mod.ts";
-export { deferred, pooledMap } from "https://deno.land/std@0.77.0/async/mod.ts";
-export { format as dateFormat } from "https://deno.land/std@0.77.0/datetime/mod.ts";
+export * as colors from "https://deno.land/std@0.84.0/fmt/colors.ts";
+export * as path from "https://deno.land/std@0.84.0/path/mod.ts";
+export * as fs from "https://deno.land/std@0.84.0/fs/mod.ts";
+export { deferred, pooledMap } from "https://deno.land/std@0.84.0/async/mod.ts";
+export { format as dateFormat } from "https://deno.land/std@0.84.0/datetime/mod.ts";
 
 export {
   Command,
   CompletionsCommand,
   HelpCommand,
-} from "https://deno.land/x/cliffy@v0.15.0/command/mod.ts";
-export { Table } from "https://deno.land/x/cliffy@v0.15.0/table/mod.ts";
+} from "https://deno.land/x/cliffy@v0.17.0/command/mod.ts";
+export { Table } from "https://deno.land/x/cliffy@v0.17.0/table/mod.ts";
 
 export * as oak from "https://deno.land/x/oak@v6.3.2/mod.ts";
 // path_to_regexp
-export { compile } from "https://deno.land/x/oak@v6.3.2/deps.ts";
+export { compile } from "https://deno.land/x/oak@v6.4.1/deps.ts";
 // WebSocket
-export { isWebSocketCloseEvent } from "https://deno.land/std@0.77.0/ws/mod.ts";
-export type { WebSocket } from "https://deno.land/std@0.77.0/ws/mod.ts";
+export { isWebSocketCloseEvent } from "https://deno.land/std@0.84.0/ws/mod.ts";
+export type { WebSocket } from "https://deno.land/std@0.84.0/ws/mod.ts";
 
 export { gzipEncode } from "https://deno.land/x/wasm_gzip@v1.0.0/mod.ts";
 export { compress as brotliEncode } from "https://deno.land/x/brotli@v0.1.4/mod.ts";
 
-import { default as _debounce } from "https://unpkg.com/lodash-es@4.17.15/debounce.js";
+import { default as _debounce } from "https://unpkg.com/lodash-es@4.17.20/debounce.js";
 export const debounce = _debounce as <
   T extends (...args: unknown[]) => unknown,
 >(

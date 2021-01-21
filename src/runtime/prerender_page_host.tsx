@@ -12,10 +12,9 @@ const [Component, App, rawData]: [
   import(Deno.args[1]).then((m) => m.default),
   Deno.readAll(Deno.stdin),
 ]);
-const { data, route, path } = rawData.length == 0
+const { data, route } = rawData.length == 0
   ? undefined
   : JSON.parse(new TextDecoder().decode(rawData));
-window.location = { pathname: path } as Location;
 // @ts-expect-error because this is a hidden variable.
 window.__DEXT_SSR = true;
 const body = render(

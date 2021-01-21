@@ -138,8 +138,12 @@ start([${routes}], App);`;
             const body = options.prerender
               ? await prerenderPage(
                 component,
-                { data, route: page_.route, path: `/${path}` },
-                { ...options, appURL },
+                { data, route: page_.route },
+                {
+                  ...options,
+                  appURL,
+                  location: `https://dext-prerender.local/${path}`,
+                },
               )
               : "";
 
@@ -289,11 +293,11 @@ async function prerenderDocument(
 async function prerenderPage(
   component: string,
   context: {
-    path: string;
     data: unknown;
     route?: Record<string, string | string[]>;
   },
   options: {
+    location: string;
     tsconfigPath: string;
     appURL: string;
     typecheck: boolean;
@@ -312,6 +316,8 @@ async function prerenderPage(
       "-q",
       "-c",
       options.tsconfigPath,
+      "--location",
+      options.location,
       ...(options.typecheck ? [] : ["--no-check"]),
       prerenderHostURL.toString(),
       new URL(`file:///${resolvedComponent}`).toString(),
