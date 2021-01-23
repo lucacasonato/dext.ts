@@ -33,9 +33,9 @@ export {
 } from "https://deno.land/x/cliffy@v0.17.0/command/mod.ts";
 export { Table } from "https://deno.land/x/cliffy@v0.17.0/table/mod.ts";
 
-export * as oak from "https://deno.land/x/oak@v6.3.2/mod.ts";
+export * as oak from "https://deno.land/x/oak@v6.4.2/mod.ts";
 // path_to_regexp
-export { compile } from "https://deno.land/x/oak@v6.4.1/deps.ts";
+export { compile } from "https://deno.land/x/oak@v6.4.2/deps.ts";
 // WebSocket
 export { isWebSocketCloseEvent } from "https://deno.land/std@0.84.0/ws/mod.ts";
 export type { WebSocket } from "https://deno.land/std@0.84.0/ws/mod.ts";
