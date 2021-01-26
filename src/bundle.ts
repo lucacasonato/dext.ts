@@ -150,7 +150,9 @@ export async function bundle(
 
     for (const out of chunks) {
       const filename = `/${out.fileName}`;
-      if (out.facadeModuleId && out.facadeModuleId.startsWith("dext-page:///")) {
+      if (
+        out.facadeModuleId && out.facadeModuleId.startsWith("dext-page:///")
+      ) {
         const page = pages.pages.find(
           (p) =>
             p.path === out.facadeModuleId!.substring("dext-page:///".length),
