@@ -43,7 +43,7 @@ export function dextPlugin(
         implicitlyLoadedAfterOneOf.push(component);
         this.emitFile({
           name: pageMap[component].name.replace("/", "-"),
-          id: "dext-page://" + component,
+          id: "dext-page:///" + component,
           type: "chunk",
         });
       }
@@ -55,23 +55,23 @@ export function dextPlugin(
     },
     resolveId(source, referrer) {
       if (referrer === "dext:///main.js") return source;
-      if (referrer?.startsWith("dext-page://")) {
-        return this.resolve(source, referrer.substring("dext-page://".length));
+      if (referrer?.startsWith("dext-page:///")) {
+        return this.resolve(source, referrer.substring("dext-page:///".length));
       }
       return null;
     },
     load(id) {
-      if (id.startsWith("dext-page://")) {
+      if (id.startsWith("dext-page:///")) {
         return `export { default } from "${
           id.substring(
-            "dext-page://".length,
+            "dext-page:///".length,
           )
         }";`;
       }
       if (id == "dext:///main.js") {
         const routes = Object.entries(pageMap)
           .map(([id, page]) => {
-            return `["${page.route}", [() => import("dext-page://${id}"), ${
+            return `["${page.route}", [() => import("dext-page:///${id}"), ${
               page.hasGetStaticData ? "true" : "false"
             }]]`;
           })
@@ -100,7 +100,7 @@ start([${routes}], App);`;
         const file = bundle[name];
         if (file.type === "chunk" && file.isEntry) {
           const component = file.facadeModuleId!.substring(
-            "dext-page://".length,
+            "dext-page:///".length,
           );
           const page = pageMap[component];
 
