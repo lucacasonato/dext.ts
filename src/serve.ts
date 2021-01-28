@@ -6,6 +6,7 @@ import {
   WebSocket,
 } from "../deps/mod.ts";
 import type { Page } from "./util.ts";
+import { addApis } from "./apis.ts";
 
 export async function serve(
   pages: Page[],
@@ -57,7 +58,7 @@ export async function serve(
       );
     });
   }
-
+  addApis(router);
   app.use(router.routes());
   app.use(router.allowedMethods());
 
