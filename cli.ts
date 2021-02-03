@@ -16,7 +16,7 @@ import { exportCommand } from "./src/export.ts";
 import { serve } from "./src/serve.ts";
 import { findPages, printError } from "./src/util.ts";
 
-const VERSION = "0.10.2";
+const VERSION = "0.10.3";
 
 try {
   await new Command()
