@@ -27,7 +27,7 @@ export function integrationTest(options: {
       const cli = new URL("../cli.ts", import.meta.url).toString();
 
       const proc = Deno.run({
-        cmd: ["deno", "run", "-A", "--unstable", cli, ...options.cmd],
+        cmd: [Deno.execPath(), "run", "-A", "--unstable", cli, ...options.cmd],
         cwd: dir,
         stdout: "piped",
         stderr: "piped",
