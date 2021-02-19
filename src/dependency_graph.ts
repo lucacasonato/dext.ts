@@ -11,7 +11,14 @@ export interface Dep {
 
 async function runDenoInfo(entrypoint: string): Promise<DepGraph> {
   const p = Deno.run({
-    cmd: ["deno", "info", "--json", "--unstable", "--no-check", entrypoint],
+    cmd: [
+      Deno.execPath(),
+      "info",
+      "--json",
+      "--unstable",
+      "--no-check",
+      entrypoint,
+    ],
     stdout: "piped",
     stderr: "inherit",
   });

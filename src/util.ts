@@ -119,7 +119,7 @@ export async function checkHasDataHooks(
   hasGetStaticData: boolean;
 }> {
   const proc = Deno.run({
-    cmd: ["deno", "doc", "--json", path],
+    cmd: [Deno.execPath(), "doc", "--json", path],
     stdout: "piped",
     stderr: "inherit",
   });

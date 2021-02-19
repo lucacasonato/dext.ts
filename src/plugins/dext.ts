@@ -189,7 +189,7 @@ async function getStaticPaths(
   );
   const proc = Deno.run({
     cmd: [
-      "deno",
+      Deno.execPath(),
       "run",
       "-A",
       "-q",
@@ -225,7 +225,7 @@ async function getStaticData(
   );
   const proc = Deno.run({
     cmd: [
-      "deno",
+      Deno.execPath(),
       "run",
       "-A",
       "-q",
@@ -264,7 +264,7 @@ async function prerenderDocument(
   );
   const proc = Deno.run({
     cmd: [
-      "deno",
+      Deno.execPath(),
       "run",
       "-A",
       "-q",
@@ -310,7 +310,7 @@ async function prerenderPage(
   );
   const proc = Deno.run({
     cmd: [
-      "deno",
+      Deno.execPath(),
       "run",
       "-A",
       "-q",
