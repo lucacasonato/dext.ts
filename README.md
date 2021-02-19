@@ -19,7 +19,7 @@ To install, run the following command. This will make the `dext` CLI available
 in your path.
 
 ```
-deno install --allow-read --allow-write --allow-env --allow-net --allow-run --unstable -f -n dext https://deno.land/x/dext@0.10.3/cli.ts
+deno install --allow-read --allow-write --allow-env --allow-net --allow-run --unstable -f -n dext https://deno.land/x/dext@0.10.4/cli.ts
 ```
 
 ## Getting started
