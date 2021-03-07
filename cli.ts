@@ -91,7 +91,6 @@ try {
     .command("completions", new CompletionsCommand())
     .parse(Deno.args);
 } catch (err) {
-  throw err;
   printError(err);
   Deno.exit(1);
 }

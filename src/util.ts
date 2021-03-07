@@ -147,7 +147,7 @@ export async function checkHasDataHooks(
 // deno-lint-ignore no-explicit-any
 export function printError(err: any) {
   if (err.message != "Failed to prerender page") {
-    console.log(colors.red(colors.bold("error: ")) + err.message);
+    console.log(colors.red(colors.bold("error: ")) + err);
     if (err.code === "PARSE_ERROR") {
       console.log(
         `${err.loc.file}:${err.loc.line}:${err.loc.column}\n${err.frame}`,
