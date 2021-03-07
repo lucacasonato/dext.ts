@@ -8,4 +8,4 @@ export type {
   GetStaticDataContext,
   GetStaticPaths,
   PageProps,
-} from "https://deno.land/x/dext@0.10.4/mod.ts";
+} from "https://deno.land/x/dext@0.10.5/mod.ts";
