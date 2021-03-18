@@ -6,7 +6,7 @@ interface Data {
 }
 
 function IndexPage(props: PageProps<Data>) {
-  const [path] = useLocation();
+  const [path, navigate] = useLocation();
 
   return (
     <>
@@ -15,6 +15,20 @@ function IndexPage(props: PageProps<Data>) {
       <p>The random is {props.data.random}.</p>
       <p>
         <a href="/user/luca">Go to @luca</a>
+      </p>
+      <p>
+        <a href="/user/luca?foo=1&bar=2">Go to @luca with query params</a>
+      </p>
+      <p>
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate("/user/luca?baz=3");
+          }}
+        >
+          Go to @luca with query params with navigate
+        </a>
       </p>
     </>
   );

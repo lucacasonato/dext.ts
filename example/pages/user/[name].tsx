@@ -18,6 +18,7 @@ function UserPage(props: PageProps<Props>) {
       <h1>
         This is the page for {name} - {props.data.capitalizedName}
       </h1>
+      {location.search && <p>query string is "{location.search}"</p>}
       <p>
         <a href="/">Go home</a>
       </p>

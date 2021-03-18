@@ -50,7 +50,7 @@ function Dext(props: {
   const navigate = useCallback(
     (to: string) => {
       window.history.pushState(null, "", to);
-      setDesiredPath(to);
+      setDesiredPath(new URL(to, location.href).pathname);
     },
     [setDesiredPath],
   );
