@@ -20,7 +20,8 @@ export function initRouter(
       return;
     }
 
-    const [route] = router.getRoute(href);
+    const { pathname } = new URL(href, location.href);
+    const [route] = router.getRoute(pathname);
     if (route) {
       navigate(href);
       return true;
