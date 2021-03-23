@@ -3,15 +3,13 @@ import type { ComponentType } from "../../deps/preact/mod.ts";
 import { render } from "../../deps/preact/ssr.ts";
 import type { AppProps, PageProps } from "./type.ts";
 
-const [Component, App, rawData]: [
-  ComponentType<PageProps>,
-  ComponentType<AppProps>,
-  Uint8Array,
-] = await Promise.all([
-  import(Deno.args[0]).then((m) => m.default),
-  import(Deno.args[1]).then((m) => m.default),
-  Deno.readAll(Deno.stdin),
-]);
+const Component: ComponentType<PageProps> = await import(Deno.args[0]).then(
+  (m) => m.default,
+);
+const App: ComponentType<AppProps> = await import(Deno.args[1]).then(
+  (m) => m.default,
+);
+const rawData: Uint8Array = await Deno.readAll(Deno.stdin);
 const { data, route } = rawData.length == 0
   ? undefined
   : JSON.parse(new TextDecoder().decode(rawData));
