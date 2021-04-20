@@ -1,4 +1,4 @@
-import { compile, path, Plugin, pooledMap } from "../../deps/mod.ts";
+import { compile, path, Plugin, pooledMap, writeAll } from "../../deps/mod.ts";
 import type { GetStaticDataContext, GetStaticPaths } from "../type.ts";
 import type { Page, Pages } from "../util.ts";
 
@@ -174,7 +174,7 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
 async function noNewlineLog(str: string) {
-  await Deno.writeAll(Deno.stdout, encoder.encode(str));
+  await writeAll(Deno.stdout, encoder.encode(str));
 }
 
 async function getStaticPaths(
@@ -239,7 +239,7 @@ async function getStaticData(
     stdout: "piped",
     stderr: "inherit",
   });
-  await Deno.writeAll(
+  await writeAll(
     proc.stdin,
     new TextEncoder().encode(JSON.stringify(context)),
   );
@@ -327,7 +327,7 @@ async function prerenderPage(
     stdout: "piped",
     stderr: "inherit",
   });
-  await Deno.writeAll(
+  await writeAll(
     proc.stdin,
     new TextEncoder().encode(JSON.stringify(context)),
   );
