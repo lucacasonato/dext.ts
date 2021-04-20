@@ -46,6 +46,7 @@ export async function bundle(
     cache?: RollupCache;
     typecheck: boolean;
     minify: boolean;
+    sourcemap: boolean;
     prerender: boolean;
     hotRefresh: boolean;
     hotRefreshHost?: string;
@@ -55,8 +56,8 @@ export async function bundle(
   const outputOptions: OutputOptions = {
     dir: options.outDir,
     format: "es",
-    sourcemap: true,
-    compact: true,
+    sourcemap: options.sourcemap,
+    compact: options.minify,
     chunkFileNames: "static/[name]-[hash].js",
     assetFileNames: "assets/[name]-[hash][extname]",
   };
