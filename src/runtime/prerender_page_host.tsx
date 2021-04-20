@@ -1,5 +1,6 @@
 import { h } from "../../deps/preact/mod.ts";
 import type { ComponentType } from "../../deps/preact/mod.ts";
+import { readAll, writeAllSync } from "../../deps/mod.ts";
 import { render } from "../../deps/preact/ssr.ts";
 import type { AppProps, PageProps } from "./type.ts";
 
@@ -9,7 +10,7 @@ const Component: ComponentType<PageProps> = await import(Deno.args[0]).then(
 const App: ComponentType<AppProps> = await import(Deno.args[1]).then(
   (m) => m.default,
 );
-const rawData: Uint8Array = await Deno.readAll(Deno.stdin);
+const rawData: Uint8Array = await readAll(Deno.stdin);
 const { data, route } = rawData.length == 0
   ? undefined
   : JSON.parse(new TextDecoder().decode(rawData));
@@ -22,7 +23,7 @@ const body = render(
     </App>
   </div>,
 );
-Deno.writeAllSync(
+writeAllSync(
   Deno.stdout,
   new TextEncoder().encode(`<!--dextstart-->${body}<!--dextend-->`),
 );

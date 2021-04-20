@@ -21,11 +21,16 @@ export { persistSourceMaps } from "https://raw.githubusercontent.com/denofn/deno
 export { emitFiles } from "https://raw.githubusercontent.com/denofn/denopack/8bae39bef47e532a1e8d0f6700b72a2192f7bca4/cli/emitFiles.ts";
 
 // std
-export * as colors from "https://deno.land/std@0.88.0/fmt/colors.ts";
-export * as path from "https://deno.land/std@0.88.0/path/mod.ts";
-export * as fs from "https://deno.land/std@0.88.0/fs/mod.ts";
-export { deferred, pooledMap } from "https://deno.land/std@0.88.0/async/mod.ts";
-export { format as dateFormat } from "https://deno.land/std@0.88.0/datetime/mod.ts";
+export * as colors from "https://deno.land/std@0.93.0/fmt/colors.ts";
+export * as path from "https://deno.land/std@0.93.0/path/mod.ts";
+export * as fs from "https://deno.land/std@0.93.0/fs/mod.ts";
+export { deferred, pooledMap } from "https://deno.land/std@0.93.0/async/mod.ts";
+export { format as dateFormat } from "https://deno.land/std@0.93.0/datetime/mod.ts";
+export {
+  readAll,
+  writeAll,
+  writeAllSync,
+} from "https://deno.land/std@0.93.0/io/util.ts";
 
 export {
   Command,
