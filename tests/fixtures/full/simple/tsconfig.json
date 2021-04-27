@@ -1,6 +1,13 @@
 {
   "compilerOptions": {
-    "lib": ["esnext", "dom", "dom.iterable", "dom.asynciterable", "deno.ns", "deno.unstable"],
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "dom.asynciterable",
+      "deno.ns",
+      "deno.unstable"
+    ],
     "jsx": "react",
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment"
