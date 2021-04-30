@@ -2,6 +2,7 @@ const [{ getStaticData }, rawData]: [
   // deno-lint-ignore ban-types
   { getStaticData: Function },
   Uint8Array,
+  // deno-lint-ignore no-deprecated-deno-api
 ] = await Promise.all([import(Deno.args[0]), Deno.readAll(Deno.stdin)]);
 const data = rawData.length == 0
   ? undefined
