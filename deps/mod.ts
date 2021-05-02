@@ -1,4 +1,5 @@
-export { rollup } from "https://raw.githubusercontent.com/denofn/denopack/8bae39bef47e532a1e8d0f6700b72a2192f7bca4/deps.ts";
+// @deno-types="https://unpkg.com/rollup@2.26.11/dist/rollup.d.ts"
+export { rollup } from "https://unpkg.com/rollup@2.26.11/dist/es/rollup.browser.js";
 export type {
   ModuleFormat,
   OutputAsset,
@@ -11,9 +12,9 @@ export type {
   RollupCache,
   RollupOptions,
   RollupOutput,
-} from "https://raw.githubusercontent.com/denofn/denopack/8bae39bef47e532a1e8d0f6700b72a2192f7bca4/deps.ts";
+} from "https://unpkg.com/rollup@2.26.11/dist/rollup.d.ts";
 
-export { useCache } from "https://raw.githubusercontent.com/denofn/denopack/8bae39bef47e532a1e8d0f6700b72a2192f7bca4/plugin/mod.ts";
+export { useCache } from "https://raw.githubusercontent.com/denofn/denopack/8bae39bef47e532a1e8d0f6700b72a2192f7bca4/plugin/hooks.ts";
 export { pluginTerserTransform } from "https://raw.githubusercontent.com/denofn/denopack/8bae39bef47e532a1e8d0f6700b72a2192f7bca4/plugin/terserTransform/mod.ts";
 
 export { persistSourceMaps } from "https://raw.githubusercontent.com/denofn/denopack/8bae39bef47e532a1e8d0f6700b72a2192f7bca4/cli/persistSourceMaps.ts";

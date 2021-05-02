@@ -174,6 +174,7 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
 async function noNewlineLog(str: string) {
+  // deno-lint-ignore no-deprecated-deno-api
   await Deno.writeAll(Deno.stdout, encoder.encode(str));
 }
 
@@ -239,6 +240,7 @@ async function getStaticData(
     stdout: "piped",
     stderr: "inherit",
   });
+  // deno-lint-ignore no-deprecated-deno-api
   await Deno.writeAll(
     proc.stdin,
     new TextEncoder().encode(JSON.stringify(context)),
@@ -327,6 +329,7 @@ async function prerenderPage(
     stdout: "piped",
     stderr: "inherit",
   });
+  // deno-lint-ignore no-deprecated-deno-api
   await Deno.writeAll(
     proc.stdin,
     new TextEncoder().encode(JSON.stringify(context)),
