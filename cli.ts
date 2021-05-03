@@ -43,6 +43,16 @@ try {
       "If preact/debug should be included in the bundle.",
       { default: false },
     )
+    .option(
+      "--sourcemap [enabled:boolean]",
+      "If sourcemap should be generated",
+      { default: true },
+    )
+    .option(
+      "--minify [enabled:boolean]",
+      "If the source should be minified",
+      { default: true },
+    )
     .description("Build your application.")
     .action(build)
     .command("start [root]")
@@ -96,7 +106,13 @@ try {
 }
 
 async function build(
-  options: { typecheck: boolean; prerender: boolean; debug: boolean },
+  options: {
+    typecheck: boolean;
+    prerender: boolean;
+    debug: boolean;
+    sourcemap: boolean;
+    minify: boolean;
+  },
   root?: string,
 ) {
   root = path.resolve(Deno.cwd(), root ?? "");
@@ -134,7 +150,8 @@ async function build(
     rootDir: root,
     outDir,
     tsconfigPath,
-    minify: true,
+    minify: options.minify,
+    sourcemap: options.sourcemap,
     hotRefresh: false,
     typecheck: options.typecheck,
     prerender: options.prerender,
@@ -276,6 +293,7 @@ async function dev(
         tsconfigPath,
         cache,
         minify: false,
+        sourcemap: true,
         hotRefresh: options.hotRefresh,
         hotRefreshHost: options.hotRefreshHost,
         typecheck: options.typecheck,
