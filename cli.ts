@@ -357,14 +357,18 @@ async function create(_options: unknown, maybeRoot?: string) {
   const tsconfigPath = path.join(root, "tsconfig.json");
   await Deno.writeTextFile(
     tsconfigPath,
-    JSON.stringify({
-      compilerOptions: {
-        lib: ["esnext", "dom", "deno.ns"],
-        jsx: "react",
-        jsxFactory: "h",
-        jsxFragmentFactory: "Fragment",
+    JSON.stringify(
+      {
+        compilerOptions: {
+          lib: ["esnext", "dom", "deno.ns"],
+          jsx: "react",
+          jsxFactory: "h",
+          jsxFragmentFactory: "Fragment",
+        },
       },
-    }),
+      null,
+      2,
+    ),
   );
 
   const pagesDir = path.join(root, "pages");
