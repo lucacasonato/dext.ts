@@ -21,11 +21,11 @@ export { persistSourceMaps } from "https://raw.githubusercontent.com/denofn/deno
 export { emitFiles } from "https://raw.githubusercontent.com/denofn/denopack/8bae39bef47e532a1e8d0f6700b72a2192f7bca4/cli/emitFiles.ts";
 
 // std
-export * as colors from "https://deno.land/std@0.88.0/fmt/colors.ts";
-export * as path from "https://deno.land/std@0.88.0/path/mod.ts";
-export * as fs from "https://deno.land/std@0.88.0/fs/mod.ts";
-export { deferred, pooledMap } from "https://deno.land/std@0.88.0/async/mod.ts";
-export { format as dateFormat } from "https://deno.land/std@0.88.0/datetime/mod.ts";
+export * as colors from "https://deno.land/std@0.99.0/fmt/colors.ts";
+export * as path from "https://deno.land/std@0.99.0/path/mod.ts";
+export * as fs from "https://deno.land/std@0.99.0/fs/mod.ts";
+export { deferred, pooledMap } from "https://deno.land/std@0.99.0/async/mod.ts";
+export { format as dateFormat } from "https://deno.land/std@0.99.0/datetime/mod.ts";
 
 export {
   Command,
@@ -38,8 +38,8 @@ export * as oak from "https://deno.land/x/oak@v6.5.0/mod.ts";
 // path_to_regexp
 export { compile } from "https://deno.land/x/oak@v6.5.0/deps.ts";
 // WebSocket
-export { isWebSocketCloseEvent } from "https://deno.land/std@0.88.0/ws/mod.ts";
-export type { WebSocket } from "https://deno.land/std@0.88.0/ws/mod.ts";
+export { isWebSocketCloseEvent } from "https://deno.land/std@0.99.0/ws/mod.ts";
+export type { WebSocket } from "https://deno.land/std@0.99.0/ws/mod.ts";
 
 export { gzipEncode } from "https://deno.land/x/wasm_gzip@v1.0.0/mod.ts";
 export { compress as brotliEncode } from "https://deno.land/x/brotli@v0.1.4/mod.ts";
