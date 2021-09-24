@@ -59,7 +59,7 @@ function Dext(props: {
     // sets up event listeners on <a> elements
     initRouter(props.router, navigate);
 
-    window.addEventListener("popstate", (event) => {
+    self.addEventListener("popstate", (event) => {
       setDesiredPath(window.location.pathname);
     });
   }, [props.router, navigate]);
