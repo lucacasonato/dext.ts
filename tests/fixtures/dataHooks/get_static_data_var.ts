@@ -1,1 +1,1 @@
-export var getStaticData = () => {};
+export const getStaticData = () => {};
