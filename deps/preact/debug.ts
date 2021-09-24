@@ -1,1 +1,1 @@
-export * from "https://x.lcas.dev/preact@10.5.12/debug.js";
+export * from "https://esm.sh/preact@10.5.14/debug";

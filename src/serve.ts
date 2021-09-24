@@ -1,10 +1,4 @@
-import {
-  colors,
-  dateFormat,
-  isWebSocketCloseEvent,
-  oak,
-  WebSocket,
-} from "../deps/mod.ts";
+import { colors, dateFormat, oak } from "../deps/mod.ts";
 import type { Page } from "./util.ts";
 
 export async function serve(
@@ -27,11 +21,9 @@ export async function serve(
       }
       const socket = await ctx.upgrade();
       hmrListeners.add(socket);
-      for await (const ev of socket) {
-        if (isWebSocketCloseEvent(ev)) {
-          hmrListeners.delete(socket);
-        }
-      }
+      socket.onclose = () => {
+        hmrListeners.delete(socket);
+      };
     });
   }
 
@@ -76,7 +68,7 @@ export async function serve(
   async function hotRefreshLoop() {
     for await (const _ of options.hotRefresh!) {
       for (const ws of hmrListeners) {
-        await ws.send("reload");
+        ws.send("reload");
       }
     }
   }
