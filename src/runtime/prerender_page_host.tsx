@@ -15,11 +15,11 @@ const { data, route, pattern } = rawData.length == 0
   ? undefined
   : JSON.parse(new TextDecoder().decode(rawData));
 // @ts-expect-error because this is a hidden variable.
-window.__DEXT_SSR = true;
+window.__DEXT_SSR = { pattern };
 const body = render(
   <div>
     <App>
-      <Component route={route} data={data} pattern={pattern} />
+      <Component route={route} data={data} />
     </App>
   </div>,
 );
