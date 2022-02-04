@@ -138,7 +138,7 @@ start([${routes}], App);`;
             const body = options.prerender
               ? await prerenderPage(
                 component,
-                { data, route: page_.route },
+                { data, route: page_.route, pattern: page.route },
                 {
                   ...options,
                   appURL,
@@ -297,6 +297,7 @@ async function prerenderPage(
   context: {
     data: unknown;
     route?: Record<string, string | string[]>;
+    pattern: string | null;
   },
   options: {
     location: string;

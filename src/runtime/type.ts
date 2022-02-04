@@ -10,6 +10,7 @@ export interface AppProps {
 
 export interface PageProps<T = unknown> {
   route?: Record<string, string | string[]>;
+  pattern: string | null;
   data: T;
 }
 
