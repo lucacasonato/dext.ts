@@ -114,9 +114,7 @@ const DextPage = memo(
       <locationCtx.Provider value={[path, navigate, pattern]}>
         <div>
           <App>
-            {Page === null
-              ? <Error404 />
-              : <Page route={match!} />}
+            {Page === null ? <Error404 /> : <Page route={match!} />}
           </App>
         </div>
       </locationCtx.Provider>
