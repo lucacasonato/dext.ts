@@ -54,9 +54,14 @@ export async function serve(
   app.use(router.allowedMethods());
 
   app.use(async (context) => {
-    await oak.send(context, context.request.url.pathname, {
-      root: options.staticDir,
-    });
+    try {
+      await oak.send(context, context.request.url.pathname, {
+        root: options.staticDir,
+      });
+    } catch {
+      context.response.status = 404;
+      context.response.body = `404 Not Found`;
+    }
   });
 
   app.addEventListener("listen", ({ hostname, port }) => {
