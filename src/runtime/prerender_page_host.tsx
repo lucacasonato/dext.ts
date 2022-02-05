@@ -11,11 +11,11 @@ const App: ComponentType<AppProps> = await import(Deno.args[1]).then(
 );
 // deno-lint-ignore no-deprecated-deno-api
 const rawData: Uint8Array = await Deno.readAll(Deno.stdin);
-const { data, route } = rawData.length == 0
+const { data, route, pattern } = rawData.length == 0
   ? undefined
   : JSON.parse(new TextDecoder().decode(rawData));
 // @ts-expect-error because this is a hidden variable.
-window.__DEXT_SSR = true;
+window.__DEXT_SSR = { pattern };
 const body = render(
   <div>
     <App>

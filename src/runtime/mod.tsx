@@ -65,8 +65,13 @@ function Dext(props: {
   }, [props.router, navigate]);
 
   const [page, setPage] = useState<
-    [PageComponent | null, string, Record<string, string | string[]>]
-  >([props.initialPage, desiredPath, desiredMatch]);
+    [
+      PageComponent | null,
+      string,
+      string | null,
+      Record<string, string | string[]>,
+    ]
+  >([props.initialPage, desiredPath, desiredRoute?.[0] ?? null, desiredMatch]);
 
   useEffect(() => {
     let cancelled = false;
@@ -74,7 +79,7 @@ function Dext(props: {
       loadComponent(desiredRoute[1][0](), desiredRoute[1][1], desiredPath)
         .then((page) => {
           if (!cancelled) {
-            setPage([page, desiredPath, desiredMatch]);
+            setPage([page, desiredPath, desiredRoute[0], desiredMatch]);
           }
         })
         .catch((err) => {
@@ -84,9 +89,9 @@ function Dext(props: {
           }
         });
     } else {
-      setPage([null, desiredPath, desiredMatch]);
+      setPage([null, desiredPath, desiredRoute, desiredMatch]);
     }
-    () => (cancelled = true);
+    (() => (cancelled = true));
   }, [desiredRoute, desiredPath, desiredMatch]);
 
   return <DextPage App={props.app} page={page} navigate={navigate} />;
@@ -95,15 +100,22 @@ function Dext(props: {
 const DextPage = memo(
   (props: {
     App: ComponentType<AppProps>;
-    page: [PageComponent | null, string, Record<string, string | string[]>];
+    page: [
+      PageComponent | null,
+      string,
+      string | null,
+      Record<string, string | string[]>,
+    ];
     navigate: (to: string) => void;
   }) => {
     const { App, page, navigate } = props;
-    const [Page, path, match] = page;
+    const [Page, path, pattern, match] = page;
     return (
-      <locationCtx.Provider value={[path, navigate]}>
+      <locationCtx.Provider value={[path, navigate, pattern]}>
         <div>
-          <App>{Page === null ? <Error404 /> : <Page route={match!} />}</App>
+          <App>
+            {Page === null ? <Error404 /> : <Page route={match!} />}
+          </App>
         </div>
       </locationCtx.Provider>
     );
